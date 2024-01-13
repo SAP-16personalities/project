@@ -7,7 +7,7 @@ color <- function(personality) {
 check_expected <- function(table) {
   rows_total <- rowSums(table)
   cols_total <- colSums(table)
-  total <- sum(rows_total + cols_total)
+  total <- sum(rows_total)
   
   for(i in rows_total) {
     for(j in cols_total) {
@@ -15,4 +15,14 @@ check_expected <- function(table) {
     }
   }
   TRUE
+}
+
+height_category <- function(height) {
+  ifelse(height <= 160, "Short", 
+         ifelse(height <= 175, "Medium height", "Tall"))
+}
+
+weight_category <- function(weight) {
+  ifelse(weight <= 60, "Light", 
+         ifelse(weight <= 90, "Medium weight", "Heavy"))
 }

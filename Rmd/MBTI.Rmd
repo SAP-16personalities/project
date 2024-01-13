@@ -24,12 +24,18 @@ library(leaps)
 rm(list = ls()) # uklanjanje svih varijabli iz okoline
 ```
 
-Učitavanje vanjskih skripti
 ```{r, echo=F}
 source("../Rscripts/utils.R")
 ```
 
 ***
+
+# Motivacija i opis problema
+
+Istražujemo povezanost između osobnosti, dobivene kroz MBTI test, i fizičkih karakteristika poput držanja tijela, težine i visine. Kroz proučavanje pitanja kao što su "Kako tipovi ličnosti utječu na način držanja?" i "Postoje li razlike u tjelesnoj težini ili visini između različitih tipova ličnosti?" analizom ovih podataka, nastojimo bolje razumjeti veze između mentalnog i fizičkog aspekta individualnosti.
+
+***
+
 # Učitavanje i uređivanje podatkovnog skupa
 
 ## Učitavanje i proučavanje podatkovnog skupa 
@@ -74,10 +80,26 @@ colnames(dataset)[8] <- "PAIN_3"
 colnames(dataset)[9] <- "PAIN_4"
 ```
 
+```{r}
+dataset$HEIGHT <- round(dataset$HEIGHT * 2.54, 1)
+dataset$WEIGHT <- round(dataset$WEIGHT * 0.45359237, 1)
+```
+
+
 Dodat ćemo novi stupac "GROUP" u kojem ćemo grupirati tipove osobnosti ovisno o boji kojoj pripadaju.
 ```{r}
 dataset$GROUP <- as.factor(color(dataset$MBTI)) 
+dataset$IS_ACTIVE <- as.factor(ifelse(dataset$ACTIVITY_LEVEL == "Low", "Inactive", "Active"))
+dataset$HEIGHTgroup <- as.factor(height_category(dataset$HEIGHT))
+dataset$HEIGHTgroup <- factor(dataset$HEIGHTgroup, levels = c("Short", "Medium height", "Tall"))
+dataset$WEIGHTgroup <- as.factor(weight_category(dataset$WEIGHT))
+dataset$WEIGHTgroup <- factor(dataset$WEIGHTgroup, levels = c("Light", "Medium weight", "Heavy"))
+dataset$IE <- as.factor(substring(dataset$MBTI, 1, 1))
+dataset$SN <- as.factor(substr(dataset$MBTI, 2, 2))
+dataset$TF <- as.factor(substr(dataset$MBTI, 3, 3))
+dataset$JP <- as.factor(substr(dataset$MBTI, 4, 4))
 ```
+
 
 Ovako naš podatkovni skup izgleda nakon uređivanja njegovih podataka.
 ```{r}
@@ -99,7 +121,8 @@ Stupac "POSTURE" poprima vrijednosti:
 ```{r}
 ggplot(dataset, aes(x = POSTURE, fill = POSTURE)) +
   geom_bar() +
-  scale_fill_ordinal()
+  scale_fill_ordinal() + 
+  labs(x = "Posture", fill = "Posture", y = "Count")
 ```
 
 Imamo 4 klase načina držanja.
@@ -109,11 +132,14 @@ Stupac "MBTI" poprima vrijednosti:
 ggplot(dataset, aes(x = MBTI, fill = MBTI)) + 
   geom_bar() + 
   scale_fill_ordinal() + 
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x = element_text(angle = 45)) + 
+  labs(y = "Count")
 ```
 ```{r}
-ggplot(dataset, aes(x = GROUP, fill = GROUP)) + geom_bar() + 
-  scale_fill_ordinal()
+ggplot(dataset, aes(x = GROUP, fill = GROUP)) + 
+  geom_bar() + 
+  scale_fill_ordinal() + 
+  labs(x = "Group", fill = "Group", y = "Count")
 ```
 
 [Razlikujemo 16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
@@ -122,7 +148,7 @@ ggplot(dataset, aes(x = GROUP, fill = GROUP)) + geom_bar() +
 Provest ćemo hi kvadrat test za kategorijske podatke.
 Pretpostavljamo normalnost ?.
 ```{r}
-contingency_table <- table(dataset$POSTURE, dataset$GROUP)
+contingency_table <- table(dataset$POSTURE, dataset$IE)
 contingency_table
 check_expected(contingency_table)
 ```
@@ -130,10 +156,42 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
+Ekstrovertnost imaju veze sa načinom držanja.
 
 
+```{r}
+contingency_table <- table(dataset$POSTURE, dataset$SN)
+contingency_table
+check_expected(contingency_table)
+```
+```{r}
+chisq <- chisq.test(contingency_table)
+chisq
+```
+Raspoznavanje/intuicija nemaju veze sa načinom držanja.
 
+```{r}
+contingency_table <- table(dataset$POSTURE, dataset$TF)
+contingency_table
+check_expected(contingency_table)
+```
+```{r}
+chisq <- chisq.test(contingency_table)
+chisq
+```
+Razmišljanje/osjećanje nemaju veze sa načinom držanja.
 
+```{r}
+contingency_table <- table(dataset$POSTURE, dataset$JP)
+contingency_table
+check_expected(contingency_table)
+```
+
+```{r}
+chisq <- chisq.test(contingency_table)
+chisq
+```
+Produđivanje/opažanje ima veze sa načinom držanja
 
 
 
@@ -144,22 +202,99 @@ Fizičku aktivnost nam predstavlja stupac "ACTIVITY_LEVEL"
 ggplot(dataset, aes(x = ACTIVITY_LEVEL, fill = ACTIVITY_LEVEL)) + 
   geom_bar() + 
   scale_fill_ordinal() + 
-  labs(x = "ACTIVITY LEVEL", fill = "ACTIVITY LEVEL")
+  labs(x = "Activity level", fill = "Activity level", y = "Count")
 ```
 Razlikujemo 3 razine fizičke aktivnosti.
+
+```{r}
+ggplot(dataset, aes(x = E, fill = E>I)) + geom_bar() + 
+  scale_fill_ordinal() + 
+  labs(x = "Extroversion", fill = "Extrovert", y = "Count")
+```
+```{r}
+contingency_table <- table(dataset$IS_ACTIVE, dataset$IE)
+contingency_table
+check_expected(contingency_table)
+```
+```{r, warning=F}
+chisq <- chisq.test(contingency_table)
+chisq
+```
 
 
 
 
 ## Razlika u visini/težini obzirom na tip ličnosti
 
+```{r}
+ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROUP)) + 
+  geom_point() + 
+  stat_smooth(method = lm, 
+              inherit.aes = F, 
+              aes(x = dataset$HEIGHT, y = dataset$WEIGHT), 
+              color = "grey", 
+              linetype = 2, 
+              se=F,
+              formula = y ~ x) + 
+  labs(x = "Height", y = "Weight", color = "MBTI group")
+```
+
+```{r}
+contingency_table <- table(dataset$HEIGHTgroup, dataset$IE)
+contingency_table
+check_expected(contingency_table)
+```
+```{r}
+chisq <- chisq.test(contingency_table)
+chisq
+```
+Ekstroverstnost nema vete sa visinom.
+
+```{r}
+contingency_table <- table(dataset$WEIGHTgroup, dataset$JP)
+contingency_table
+check_expected(contingency_table)
+```
+```{r}
+chisq <- chisq.test(contingency_table)
+chisq
+```
+Prosuđivanje/opažanje nema veze sa visinom.
+
+
+
 ## Tip ličnosti na temelju pojedinih karakteristika
 
 ```{r}
-model <- lm(formula = dataset$S ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE)
 
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
 summary(model)
-```
 
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+summary(model)
+
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
+summary(model)
+
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
+summary(model)
+
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+summary(model)
+
+probs1 <- predict(model, newdata = dataset, type = "response")
+
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+summary(model)
+
+probs2 <- predict(model, newdata = dataset, type = "response")
+slova <- ifelse(probs1>probs2, "J", "P")
+vrijednosti <- ifelse(slova == substr(dataset$MBTI, 4, 4), 1, 0)
+uk <- sum(vrijednosti)/length(vrijednosti)
+
+```
+***
+
+# Zaključak
 
 
