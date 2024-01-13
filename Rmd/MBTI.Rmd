@@ -18,17 +18,17 @@ library(gridExtra)
 ```
 
 
-```{r}
-rm(list = ls())
+```{r, echo=F}
+rm(list = ls()) # uklanjanje svih varijabli iz okoline
 ```
 
-
+***
 # Učitavanje i uređivanje podatkovnog skupa
 
 ## Učitavanje i proučavanje podatkovnog skupa 
 
 Učitavamo podatkovni skup u varijablu "dataset".
-```{r}
+```{r, message=F}
 dataset <- read_csv("../data/MBTI.csv")
 ```
 
@@ -49,5 +49,31 @@ dataset$MBTI <- as.factor(dataset$MBTI)
 dataset$POSTURE <- as.factor(dataset$POSTURE)
 ```
 
+Uklonit ćemo prva dva stupca podatkovnog skupa obzirom da su jedinstveni identifikatori te nam ne pomažu u analizi.
+```{r}
+dataset$...1 <- NULL
+dataset$`S No` <- NULL
+```
 
+Preimenovat ćemo stupce "ACTIVITY LEVEL", "PAIN 1", "PAIN 2", "PAIN 3" i "PAIN 4" radi jednostavnosti.
+```{r}
+colnames(dataset)[5] <- "ACTIVITY_LEVEL"
+colnames(dataset)[6] <- "PAIN_1"
+colnames(dataset)[7] <- "PAIN_2"
+colnames(dataset)[8] <- "PAIN_3"
+colnames(dataset)[9] <- "PAIN_4"
+```
+
+
+Ovako naš podatkovni skup izgleda nakon uređivanja njegovih podataka.
+```{r}
+head(dataset)
+tail(dataset)
+glimpse(dataset)
+```
+
+
+***
 # Analiza podatkovnog skupa
+
+
