@@ -1,5 +1,5 @@
 # project
-<br>
+
 ## Legenda:
 <b>AGE</b> - Dob<br>
 <b>HEIGHT</b> - Visina (inch)<br>
