@@ -17,12 +17,16 @@ library(magrittr)
 library(gridExtra)
 library(nortest)
 library(leaps)
-source("../Rscripts/utils.R")
 ```
 
 
 ```{r, echo=F}
 rm(list = ls()) # uklanjanje svih varijabli iz okoline
+```
+
+Učitavanje vanjskih skripti
+```{r, echo=F}
+source("../Rscripts/utils.R")
 ```
 
 ***
