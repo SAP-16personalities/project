@@ -9,12 +9,15 @@ output:
   word_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=F}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(magrittr)
 library(gridExtra)
+library(nortest)
+library(leaps)
+source("../Rscripts/utils.R")
 ```
 
 
@@ -45,8 +48,11 @@ Faktoriziramo određene stupce "SEX", "ACTIVITY LEVEL", "MBTI", "POSTURE"  kako 
 ```{r}
 dataset$SEX <- as.factor(dataset$SEX)
 dataset$`ACTIVITY LEVEL` <- as.factor(dataset$`ACTIVITY LEVEL`)
+dataset$`ACTIVITY LEVEL` <- factor(dataset$`ACTIVITY LEVEL`, levels = c("Low", "Moderate", "High"))
 dataset$MBTI <- as.factor(dataset$MBTI)
 dataset$POSTURE <- as.factor(dataset$POSTURE)
+dataset$POSTURE <- factor(dataset$POSTURE, levels = c("A", "B", "C", "D"), 
+                          labels = c("idealno", "kifoza/lordoza", "ravna leđa", "nagnuto"))
 ```
 
 Uklonit ćemo prva dva stupca podatkovnog skupa obzirom da su jedinstveni identifikatori te nam ne pomažu u analizi.
@@ -64,6 +70,10 @@ colnames(dataset)[8] <- "PAIN_3"
 colnames(dataset)[9] <- "PAIN_4"
 ```
 
+Dodat ćemo novi stupac "GROUP" u kojem ćemo grupirati tipove osobnosti ovisno o boji kojoj pripadaju.
+```{r}
+dataset$GROUP <- as.factor(color(dataset$MBTI)) 
+```
 
 Ovako naš podatkovni skup izgleda nakon uređivanja njegovih podataka.
 ```{r}
@@ -75,5 +85,77 @@ glimpse(dataset)
 
 ***
 # Analiza podatkovnog skupa
+
+## Veza između tipa ličnosti i načina držanja
+
+U našem podatkovnom skupu imamo stupce "POSTURE" i "MBTI".
+
+Stupac "POSTURE" poprima vrijednosti:
+
+```{r}
+ggplot(dataset, aes(x = POSTURE, fill = POSTURE)) +
+  geom_bar() +
+  scale_fill_ordinal()
+```
+
+Imamo 4 klase načina držanja.
+
+Stupac "MBTI" poprima vrijednosti:
+```{r}
+ggplot(dataset, aes(x = MBTI, fill = MBTI)) + 
+  geom_bar() + 
+  scale_fill_ordinal() + 
+  theme(axis.text.x = element_text(angle = 45))
+```
+```{r}
+ggplot(dataset, aes(x = GROUP, fill = GROUP)) + geom_bar() + 
+  scale_fill_ordinal()
+```
+
+[Razlikujemo 16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
+
+
+Provest ćemo hi kvadrat test za kategorijske podatke.
+Pretpostavljamo normalnost ?.
+```{r}
+contingency_table <- table(dataset$POSTURE, dataset$GROUP)
+contingency_table
+check_expected(contingency_table)
+```
+```{r}
+chisq <- chisq.test(contingency_table)
+chisq
+```
+
+
+
+
+
+
+
+## Veza između fizičke aktivnosti i razine ekstrovertiranosti
+
+Fizičku aktivnost nam predstavlja stupac "ACTIVITY_LEVEL"
+```{r}
+ggplot(dataset, aes(x = ACTIVITY_LEVEL, fill = ACTIVITY_LEVEL)) + 
+  geom_bar() + 
+  scale_fill_ordinal() + 
+  labs(x = "ACTIVITY LEVEL", fill = "ACTIVITY LEVEL")
+```
+Razlikujemo 3 razine fizičke aktivnosti.
+
+
+
+
+## Razlika u visini/težini obzirom na tip ličnosti
+
+## Tip ličnosti na temelju pojedinih karakteristika
+
+```{r}
+model <- lm(formula = dataset$S ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE)
+
+summary(model)
+```
+
 
 
