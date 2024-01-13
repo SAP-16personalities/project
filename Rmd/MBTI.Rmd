@@ -1,0 +1,53 @@
+---
+title: "MBTI dataset transformation and analysis"
+author: "Vedran Moškov, Lucija Runjić, Borna Josipović, Lana Bartolović"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(magrittr)
+library(gridExtra)
+```
+
+
+```{r}
+rm(list = ls())
+```
+
+
+# Učitavanje i uređivanje podatkovnog skupa
+
+## Učitavanje i proučavanje podatkovnog skupa 
+
+Učitavamo podatkovni skup u varijablu "dataset".
+```{r}
+dataset <- read_csv("../data/MBTI.csv")
+```
+
+Proučavamo podatkovni skup kako bi ga znali urediti na način da nam je lakše raditi s njim kasnije.
+```{r}
+head(dataset)
+tail(dataset)
+glimpse(dataset)
+```
+
+## Uređivanje podataka podatkovnog skupa
+
+Faktoriziramo određene stupce "SEX", "ACTIVITY LEVEL", "MBTI", "POSTURE"  kako bismo kasnije mogli lakše grupirati podatke i bolje ih analizirati
+```{r}
+dataset$SEX <- as.factor(dataset$SEX)
+dataset$`ACTIVITY LEVEL` <- as.factor(dataset$`ACTIVITY LEVEL`)
+dataset$MBTI <- as.factor(dataset$MBTI)
+dataset$POSTURE <- as.factor(dataset$POSTURE)
+```
+
+
+# Analiza podatkovnog skupa
