@@ -1,22 +1,22 @@
 # project
 <br>
-<b>Legenda:</b><br>
-AGE - Dob<br>
-HEIGHT - Visina (inch)<br>
-WEIGHT - Težina (lb)<br>
-SEX - Spol<br>
-ACTIVITY LEVEL - Dnevna razina fizičke aktivnosti<br>
-PAIN 1 - Bol u vratu<br>
-PAIN 2 - Bol u gornjem dijelu leđa (torakalni dio)<br>
-PAIN 3 - Bol u srednjem dijelu leđa (lumbalni dio)<br>
-PAIN 4 - Bol u donjem dijelu leđa<br>
-MBTI - Myers Briggs indikator ličnosti<br>
-E - Ekstraverzija<br>
-I - Introverzija<br>
-S - Raspoznavanje<br>
-N - Intuicija<br>
-T - Razmišljanje<br>
-F - Osjećanje<br>
-J - Prosuđivanje<br>
-P - Opažanje<br>
-POSTURE - idealno (A), kifoza/lordoza (B), ravna leđa (C), nagnuto (D)
+<u><b>Legenda:</b><br></u>
+<b>AGE</b> - Dob<br>
+<b>HEIGHT</b> - Visina (inch)<br>
+<b>WEIGHT</b> - Težina (lb)<br>
+<b>SEX</b> - Spol<br>
+<b>ACTIVITY LEVEL</b> - Dnevna razina fizičke aktivnosti<br>
+<b>PAIN 1</b> - Bol u vratu<br>
+<b>PAIN 2</b> - Bol u gornjem dijelu leđa (torakalni dio)<br>
+<b>PAIN 3</b> - Bol u srednjem dijelu leđa (lumbalni dio)<br>
+<b>PAIN 4</b> - Bol u donjem dijelu leđa<br>
+<b>MBTI</b> - Myers Briggs indikator ličnosti<br>
+<b>E</b> - Ekstraverzija<br>
+<b>I</b> - Introverzija<br>
+<b>S</b> - Raspoznavanje<br>
+<b>N</b> - Intuicija<br>
+<b>T</b> - Razmišljanje<br>
+<b>F</b> - Osjećanje<br>
+<b>J</b> - Prosuđivanje<br>
+<b>P</b> - Opažanje<br>
+<b>POSTURE</b> - idealno (A), kifoza/lordoza (B), ravna leđa (C), nagnuto (D)
