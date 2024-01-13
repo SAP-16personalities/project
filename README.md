@@ -1,6 +1,6 @@
 # project
 <br>
-<u><b>Legenda:</b><br></u>
+## Legenda:
 <b>AGE</b> - Dob<br>
 <b>HEIGHT</b> - Visina (inch)<br>
 <b>WEIGHT</b> - Težina (lb)<br>
