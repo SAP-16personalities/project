@@ -278,35 +278,139 @@ U ovom zadatku pokušavamo predvidjeti tip ličnosti na temelju pojedinih karakt
 Nismo mogli izračunati točnu vezu s MBTI tipom osobnosti jer je to diskretna varijabla, pa smo umjesto nje pokušavali predvidjeti koeficijente za pojedino svojstvo (npr. ekstrovertnost, intuitivnost, itd.) koristeći linearnu regresiju i uspoređivanjem dobivenih koeficijenata za isto svojstvo, u našem primjeru za J (prosuđivanje) i P (opažanje). Osoba spada u kategoriju J ili P ovisno o tome koji je koeficijent (predviđan linearnom regresijom) veći. Najprije je bilo potrebno testirati više modela linearne regresije, tj. odabrati koje regresore koristiti u modelu. Za pojedine modele smo izračunali R^2 vrijednost, koja nam govori koliko dobro model objašnjava varijabilnost podataka. Model s najvećom R^2 vrijednosti je najbolji model. Nakon što smo odabrali najbolji model, izračunali smo koeficijente za J i P, te smo na temelju njih odredili tu kategoriju.
 
 ```{r}
-
+print("Prvi model za J i P karakteristike")
 model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova J prvim modelom", r_squared))
 
 model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova P prvim modelom", r_squared))
+
+print("Drugi model za J i P karakteristike")
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova J drugim modelom", r_squared))
 
 model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova P drugim modelom", r_squared))
 
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
-summary(model)
-
+print("Treci model za J i P karakteristike")
 model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova J trecim modelom", r_squared))
 
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova P trecim modelom", r_squared))
+```
+Vidimo kako je najprikladniji ispao treći model jer ima najveću R kvadrat vrijednost. Testirajmo točnost modela
+```{r}
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
 probs1 <- predict(model, newdata = dataset, type = "response")
 
 model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
-summary(model)
-
+model_summary <- summary(model)
 probs2 <- predict(model, newdata = dataset, type = "response")
+
 slova <- ifelse(probs1>probs2, "J", "P")
 vrijednosti <- ifelse(slova == substr(dataset$MBTI, 4, 4), 1, 0)
 uk <- sum(vrijednosti)/length(vrijednosti)
 
+print(paste("Točnost", uk))
 ```
-Kod procjene spada li osoba u kategoriju J ili P, dobili smo točnost od 0.6289, što je zadovoljavajuće. Ovo je dobar rezultat s obzirom na to da je naš model bio jednostavan, tj. nije sadržavao puno regresora, a i podaci su bili dosta neujednačeni, tj. određenih osobnosti nije bilo željene količine.
 
+Kod procjene spada li osoba u kategoriju J ili P, dobili smo točnost od 0.6289, što je zadovoljavajuće. Ovo je dobar rezultat s obzirom na to da je naš model bio jednostavan, tj. nije sadržavao puno regresora, a i podaci su bili dosta neujednačeni, tj. određenih osobnosti nije bilo željene količine. 
+
+Možemo ponoviti testiranje za još jednu karaktristiku, npr. razmišljanje i osjećanje
+
+```{r}
+print("Prvi model za F i T karakteristike")
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova F prvim modelom", r_squared))
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova T prvim modelom", r_squared))
+
+print("Drugi model za F i T karakteristike")
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova F drugim modelom", r_squared))
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova T drugim modelom", r_squared))
+
+print("Treci model za F i T karakteristike")
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova F trecim modelom", r_squared))
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova T trecim modelom", r_squared))
+
+```
+Drugi model se pokazuje kao najbolji, testiramo
+
+```{r}
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+probs1 <- predict(model, newdata = dataset, type = "response")
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+probs2 <- predict(model, newdata = dataset, type = "response")
+
+slova <- ifelse(probs1>probs2, "F", "T")
+vrijednosti <- ifelse(slova == substr(dataset$MBTI, 3, 3), 1, 0)
+uk <- sum(vrijednosti)/length(vrijednosti)
+
+print(paste("Točnost", uk))
+```
+Dobivena je točnost 0.7010
+
+
+## Je li postotak ekstrovertnih ljudi isti kod ljudi iznad i ispod 45 godina
+
+Kako bismo testirali je li postotak ekstroverata isti kod mladjih i starijih ljudi, koristit ćemo Z-test za dvije proporcije, uz alfa=0.05, a hipoteze postavljamo ovako
+H0 : postotak ekstroverata je isti neovisno o godinama (p1-p2=0)
+H1 : postotak ekstroverata se razlikuje ovisno o godinama (p1-p2≠0)
+
+```{r}
+subset_result <- subset(dataset, AGE < 46 & substr(MBTI, 1, 1) == "E")
+Eyoung <- nrow(subset_result)
+total_group1 <- sum(dataset$AGE <= 45)
+
+subset_result <- subset(dataset, AGE >45 & substr(MBTI, 1, 1) == "E")
+Eold <- nrow(subset_result)
+total_group2 <- sum(dataset$AGE > 45)
+
+# Perform the z-test for proportions
+z_test_result <- prop.test(c(Eyoung, Eold),
+                           c(total_group1, total_group2),
+                           alternative = "two.sided")
+
+# Print the result
+print(z_test_result)
+```
+Iz polja p-value koji je veći od 0.05 zaključujemo kako na temelju ovih podataka nemamo razloga sumnjati u H0 te ju s toga ne odbacujemo.
 ***
 
 # Zaključak
