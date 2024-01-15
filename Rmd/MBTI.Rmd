@@ -54,7 +54,7 @@ glimpse(dataset)
 
 ## Uređivanje podataka podatkovnog skupa
 
-Faktoriziramo određene stupce "SEX", "ACTIVITY LEVEL", "MBTI", "POSTURE"  kako bismo kasnije mogli lakše grupirati podatke i bolje ih analizirati
+Faktoriziramo i modificiramo stupce "SEX", "ACTIVITY LEVEL", "MBTI", "POSTURE"  kako bismo kasnije mogli lakše grupirati podatke i bolje ih analizirati.
 ```{r}
 dataset$SEX <- as.factor(dataset$SEX)
 dataset$`ACTIVITY LEVEL` <- as.factor(dataset$`ACTIVITY LEVEL`)
@@ -80,13 +80,14 @@ colnames(dataset)[8] <- "PAIN_3"
 colnames(dataset)[9] <- "PAIN_4"
 ```
 
+Pretvorit ćemo podatke u stupcima "HEIGHT" i "WEIGHT" u centimentri i kilograme.
 ```{r}
 dataset$HEIGHT <- round(dataset$HEIGHT * 2.54, 1)
 dataset$WEIGHT <- round(dataset$WEIGHT * 0.45359237, 1)
 ```
 
 
-Dodat ćemo novi stupac "GROUP" u kojem ćemo grupirati tipove osobnosti ovisno o boji kojoj pripadaju.
+Dodat ćemo neke nove stupce pomoću kojih ćemo grupirati podatke u manje grupe kako bismo ih mogli bolje analizirati.
 ```{r}
 dataset$GROUP <- as.factor(color(dataset$MBTI)) 
 dataset$IS_ACTIVE <- as.factor(ifelse(dataset$ACTIVITY_LEVEL == "Low", "Inactive", "Active"))
@@ -125,7 +126,7 @@ ggplot(dataset, aes(x = POSTURE, fill = POSTURE)) +
   labs(x = "Posture", fill = "Posture", y = "Count")
 ```
 
-Imamo 4 klase načina držanja.
+Imamo 4 klase načina držanja: idealno, kifoza/lordoza, ravna leđa, nagnuto.
 
 Stupac "MBTI" poprima vrijednosti:
 ```{r}
@@ -135,18 +136,17 @@ ggplot(dataset, aes(x = MBTI, fill = MBTI)) +
   theme(axis.text.x = element_text(angle = 45)) + 
   labs(y = "Count")
 ```
+[Razlikujemo 16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
 ```{r}
 ggplot(dataset, aes(x = GROUP, fill = GROUP)) + 
   geom_bar() + 
   scale_fill_ordinal() + 
   labs(x = "Group", fill = "Group", y = "Count")
 ```
+Tih 16 tipova osobnosti možemo podijeliti u 4 manje grupe kao što je prikazano na grafu iznad.
 
-[Razlikujemo 16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
 
-
-Provest ćemo hi kvadrat test za kategorijske podatke.
-Pretpostavljamo normalnost ?.
+Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati stupce "POSTURE" i "IE" (introvert/ekstrovert) podatkovnog okvira. Pomoću funkcije "check_expected" provjeravamo imamo li uvjete za provedbu testa na temelju dobivenih vrijednosti u našoj kontingencijskoj tablici (vraća TRUE ako su uvjeti za provedbu testa zadovoljeni).
 ```{r}
 contingency_table <- table(dataset$POSTURE, dataset$IE)
 contingency_table
@@ -156,7 +156,9 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Ekstrovertnost imaju veze sa načinom držanja.
+Na temelju rezultata testa zaključujemo da ekstrovertnost ima veze s načinom držanja.
+
+Isti postupak ćemo ponoviti i za raspoznavanje/intuiciju, razmišljanje/osjećanje te produđivanje/opažanje.
 
 
 ```{r}
@@ -168,7 +170,7 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Raspoznavanje/intuicija nemaju veze sa načinom držanja.
+Na temelju rezultata testa zaključujemo da raspoznavanje/intuicija nemaju veze s načinom držanja.
 
 ```{r}
 contingency_table <- table(dataset$POSTURE, dataset$TF)
@@ -179,7 +181,7 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Razmišljanje/osjećanje nemaju veze sa načinom držanja.
+Na temelju rezultata testa zaključujemo da razmišljanje/osjećanje nemaju veze sa načinom držanja.
 
 ```{r}
 contingency_table <- table(dataset$POSTURE, dataset$JP)
@@ -191,26 +193,30 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Produđivanje/opažanje ima veze sa načinom držanja
+Na temelju rezultata testa zaključujemo da prosuđivanje/opažanje ima veze sa načinom držanja.
 
 
 
 ## Veza između fizičke aktivnosti i razine ekstrovertiranosti
 
-Fizičku aktivnost nam predstavlja stupac "ACTIVITY_LEVEL"
+Fizičku aktivnost nam predstavlja stupac "ACTIVITY_LEVEL":
 ```{r}
-ggplot(dataset, aes(x = ACTIVITY_LEVEL, fill = ACTIVITY_LEVEL)) + 
+ggplot(dataset, aes(x = IS_ACTIVE, fill = IS_ACTIVE)) + 
   geom_bar() + 
   scale_fill_ordinal() + 
   labs(x = "Activity level", fill = "Activity level", y = "Count")
 ```
-Razlikujemo 3 razine fizičke aktivnosti.
+Prema ovom grafu ljude dijelimo u fizički aktivne i one neaktivne.
 
+Za koeficijent ekstrovertnosti imamo stupac sa nazivom "E":
 ```{r}
 ggplot(dataset, aes(x = E, fill = E>I)) + geom_bar() + 
   scale_fill_ordinal() + 
   labs(x = "Extroversion", fill = "Extrovert", y = "Count")
 ```
+Na grafu vidimo raspodjelu ljudi koji imaju veći koeficijent ekstrovertnosti od koeficijenta introvertnosti.
+
+Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati stupce "IS_ACTIVE" (stupac koji mjeri razinu aktivnosti osobe) i "IE" (introvert/ekstrovert) podatkovnog okvira.
 ```{r}
 contingency_table <- table(dataset$IS_ACTIVE, dataset$IE)
 contingency_table
@@ -220,12 +226,14 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
+Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke aktivnosti i ekstroverstnosti.
 
 
 
 
 ## Razlika u visini/težini obzirom na tip ličnosti
 
+U našem podatkovnom skupu imamo stupce "WEIGHT", "HEIGHT" i "MBTI" čija se međusobna raspodjela vidi na sljedećem grafu:
 ```{r}
 ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROUP)) + 
   geom_point() + 
@@ -238,7 +246,7 @@ ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROU
               formula = y ~ x) + 
   labs(x = "Height", y = "Weight", color = "MBTI group")
 ```
-
+Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati stupce "HEIGHT" i "IE" (introvert/ekstrovert) podatkovnog okvira.
 ```{r}
 contingency_table <- table(dataset$HEIGHTgroup, dataset$IE)
 contingency_table
@@ -248,8 +256,9 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Ekstroverstnost nema vete sa visinom.
+Na temelju rezultata testa zaključujemo da ekstroverstnost nema vete sa visinom.
 
+Sada ćemo postupak ponoviti i proučavati stupce "WEIGHT" i "JP" (produđivanje/opažanje).
 ```{r}
 contingency_table <- table(dataset$WEIGHTgroup, dataset$JP)
 contingency_table
@@ -259,42 +268,153 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Prosuđivanje/opažanje nema veze sa visinom.
+Na temelju rezultata testa zaključujemo da prosuđivanje/opažanje nema veze sa visinom.
 
 
 
 ## Tip ličnosti na temelju pojedinih karakteristika
 
-```{r}
+U ovom zadatku pokušavamo predvidjeti tip ličnosti na temelju pojedinih karakteristika.
+Nismo mogli izračunati točnu vezu s MBTI tipom osobnosti jer je to diskretna varijabla, pa smo umjesto nje pokušavali predvidjeti koeficijente za pojedino svojstvo (npr. ekstrovertnost, intuitivnost, itd.) koristeći linearnu regresiju i uspoređivanjem dobivenih koeficijenata za isto svojstvo, u našem primjeru za J (prosuđivanje) i P (opažanje). Osoba spada u kategoriju J ili P ovisno o tome koji je koeficijent (predviđan linearnom regresijom) veći. Najprije je bilo potrebno testirati više modela linearne regresije, tj. odabrati koje regresore koristiti u modelu. Za pojedine modele smo izračunali R^2 vrijednost, koja nam govori koliko dobro model objašnjava varijabilnost podataka. Model s najvećom R^2 vrijednosti je najbolji model. Nakon što smo odabrali najbolji model, izračunali smo koeficijente za J i P, te smo na temelju njih odredili tu kategoriju.
 
+```{r}
+print("Prvi model za J i P karakteristike")
 model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova J prvim modelom", r_squared))
 
 model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova P prvim modelom", r_squared))
+
+print("Drugi model za J i P karakteristike")
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova J drugim modelom", r_squared))
 
 model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova P drugim modelom", r_squared))
 
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
-summary(model)
-
+print("Treci model za J i P karakteristike")
 model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
-summary(model)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova J trecim modelom", r_squared))
 
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova P trecim modelom", r_squared))
+```
+Vidimo kako je najprikladniji ispao treći model jer ima najveću R kvadrat vrijednost. Testirajmo točnost modela
+```{r}
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
 probs1 <- predict(model, newdata = dataset, type = "response")
 
 model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
-summary(model)
-
+model_summary <- summary(model)
 probs2 <- predict(model, newdata = dataset, type = "response")
+
 slova <- ifelse(probs1>probs2, "J", "P")
 vrijednosti <- ifelse(slova == substr(dataset$MBTI, 4, 4), 1, 0)
 uk <- sum(vrijednosti)/length(vrijednosti)
 
+print(paste("Točnost", uk))
 ```
+
+Kod procjene spada li osoba u kategoriju J ili P, dobili smo točnost od 0.6289, što je zadovoljavajuće. Ovo je dobar rezultat s obzirom na to da je naš model bio jednostavan, tj. nije sadržavao puno regresora, a i podaci su bili dosta neujednačeni, tj. određenih osobnosti nije bilo željene količine. 
+
+Možemo ponoviti testiranje za još jednu karaktristiku, npr. razmišljanje i osjećanje
+
+```{r}
+print("Prvi model za F i T karakteristike")
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova F prvim modelom", r_squared))
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova T prvim modelom", r_squared))
+
+print("Drugi model za F i T karakteristike")
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova F drugim modelom", r_squared))
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova T drugim modelom", r_squared))
+
+print("Treci model za F i T karakteristike")
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova F trecim modelom", r_squared))
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova T trecim modelom", r_squared))
+
+```
+Drugi model se pokazuje kao najbolji, testiramo
+
+```{r}
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+probs1 <- predict(model, newdata = dataset, type = "response")
+
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model_summary <- summary(model)
+probs2 <- predict(model, newdata = dataset, type = "response")
+
+slova <- ifelse(probs1>probs2, "F", "T")
+vrijednosti <- ifelse(slova == substr(dataset$MBTI, 3, 3), 1, 0)
+uk <- sum(vrijednosti)/length(vrijednosti)
+
+print(paste("Točnost", uk))
+```
+Dobivena je točnost 0.7010
+
+
+## Je li postotak ekstrovertnih ljudi isti kod ljudi iznad i ispod 45 godina
+
+Kako bismo testirali je li postotak ekstroverata isti kod mladjih i starijih ljudi, koristit ćemo Z-test za dvije proporcije, uz alfa=0.05, a hipoteze postavljamo ovako
+H0 : postotak ekstroverata je isti neovisno o godinama (p1-p2=0)
+H1 : postotak ekstroverata se razlikuje ovisno o godinama (p1-p2≠0)
+
+```{r}
+subset_result <- subset(dataset, AGE < 46 & substr(MBTI, 1, 1) == "E")
+Eyoung <- nrow(subset_result)
+total_group1 <- sum(dataset$AGE <= 45)
+
+subset_result <- subset(dataset, AGE >45 & substr(MBTI, 1, 1) == "E")
+Eold <- nrow(subset_result)
+total_group2 <- sum(dataset$AGE > 45)
+
+# Perform the z-test for proportions
+z_test_result <- prop.test(c(Eyoung, Eold),
+                           c(total_group1, total_group2),
+                           alternative = "two.sided")
+
+# Print the result
+print(z_test_result)
+```
+Iz polja p-value koji je veći od 0.05 zaključujemo kako na temelju ovih podataka nemamo razloga sumnjati u H0 te ju s toga ne odbacujemo.
 ***
 
 # Zaključak
+
+(---prazan prostor za zaključak---)
 
 
