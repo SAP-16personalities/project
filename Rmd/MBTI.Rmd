@@ -386,8 +386,8 @@ Dobivena je točnost 0.7010
 ## Je li postotak ekstrovertnih ljudi isti kod ljudi iznad i ispod 45 godina
 
 Kako bismo testirali je li postotak ekstroverata isti kod mladjih i starijih ljudi, koristit ćemo Z-test za dvije proporcije, uz alfa=0.05, a hipoteze postavljamo ovako
-H0 : postotak ekstroverata je isti neovisno o godinama (p1-p2=0)
-H1 : postotak ekstroverata se razlikuje ovisno o godinama (p1-p2≠0)
+H0 : postotak ekstroverata je isti neovisno o godinama (p1 - p2 = 0)
+H1 : postotak ekstroverata se razlikuje ovisno o godinama (p1 - p2 != 0)
 
 ```{r}
 subset_result <- subset(dataset, AGE < 46 & substr(MBTI, 1, 1) == "E")
