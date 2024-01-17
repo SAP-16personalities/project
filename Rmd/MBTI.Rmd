@@ -248,16 +248,27 @@ ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROU
   labs(x = "Height", y = "Weight", color = "MBTI group")
 ```
 
+
+### Usporedba srednjih težina i visina za četiri grupe osobnosti
+
 Primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine i težine za četiri grupe osobnosti.
 
 Prvo ćemo to učiniti za visinu.
+
+H0: Nema statistički značajne razlike u srednjim visinama između grupa.
+H1: Postoji statistički značajna razlika u srednjim visinama između barem jedne od grupa.
 ```{r}
 model <- aov(HEIGHT ~ GROUP, data = dataset)
 summary(model)
 ```
 Obzirom na p-vrijednost od 0.47 ne odbacujemo nultu hipotezu. To sugerira da nema dovoljno dokaza za zaključak da postoje značajne razlike u prosječnoj visini između četiri skupine osobnosti.
 
+
+
 Zatim ćemo isto provesti i za težinu.
+
+H0: Nema statistički značajne razlike u srednjim težinama između grupa.
+H1: Postoji statistički značajna razlika u srednjim težinama između barem jedne od grupa.
 ```{r}
 model <- aov(WEIGHT ~ GROUP, data = dataset)
 summary(model)
@@ -266,6 +277,37 @@ Isto kao i u slučaju sa visinom, obzirom na p-vrijednost od 0.208 ne odbacujemo
 
 
 
+### Usporedba srednjih težina i visina za ekstroverte i introverte
+
+
+Sada ćemo usporediti srednje vrijednosti težina ekstroverata i introverata koristeći stupce "IE" i "WEIGHT" koristeći t-test.
+
+H0: Nema statistički značajne razlike u srednjim težinama između ekstroverta i introverta.
+H1: Postoji statistički značajna razlika u srednjim težinama između ekstroverta i introverta.
+```{r}
+ekstroverti <- dataset[dataset$IE == "E", ]
+introverti <- dataset[dataset$IE == "I", ]
+
+t_test <- t.test(ekstroverti$WEIGHT, introverti$WEIGHT)
+t_test
+cat("P vrijednost je", t_test$p.value, "\n")
+```
+Na temelju rezultata testa zaključujemo da ne postoji značajna razlika između težina introverata i ekstroverata.
+
+Ponovit ćemo postupak ali ovaj put uspoređivati srednje vrijednosti visina ekstroverata i introverata.
+
+H0: Nema statistički značajne razlike u srednjim visinama između ekstroverta i introverta.
+H1: Postoji statistički značajna razlika u srednjim visinama između ekstroverta i introverta.
+```{r}
+ekstroverti <- dataset[dataset$IE == "E", ]
+introverti <- dataset[dataset$IE == "I", ]
+
+t_test <- t.test(ekstroverti$HEIGHT, introverti$HEIGHT)
+t_test
+t_test$p.value
+cat("P vrijednost je", t_test$p.value, "\n")
+```
+Na temelju rezultata testa zaključujemo da ne postoji značajna razlika između visina introverata i ekstroverata.
 
 
 ## Tip ličnosti na temelju pojedinih karakteristika
