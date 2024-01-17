@@ -286,187 +286,87 @@ chisq <- chisq.test(contingency_table)
 chisq
 ```
 Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke aktivnosti i ekstroverstnosti.
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
+
+
 
 
 ## Razlika u visini/težini obzirom na tip ličnosti
 
-U našem podatkovnom skupu imamo stupce "WEIGHT", "HEIGHT" i "GROUP" (stupac u kojem je 16 tipova osobnosti raspoređeno u 4 grupe) čija se međusobna raspodjela vidi na sljedećem grafu:
-
-```{r}
-ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROUP)) + 
-  geom_point() + 
-  stat_smooth(method = lm, 
-              inherit.aes = F, 
-              aes(x = dataset$HEIGHT, y = dataset$WEIGHT), 
-              color = "grey", 
-              linetype = 2, 
-              se=F,
-              formula = y ~ x) + 
-  labs(x = "Height", y = "Weight", color = "MBTI group")
-```
+U našem podatkovnom skupu imamo stupce "WEIGHT", "HEIGHT", "GROUP" (stupac u kojem je 16 tipova osobnosti raspoređeno u 4 grupe) te stupac "IE" (u kojem je sadržan podatak o tome je li osoba introvert ili ekstrovert) koje ćemo koristiti u analiziranju visine i težine obzirom na tip ličnosti.
 
 
-### Usporedba srednjih visina za četiri grupe osobnosti
+Prvo ćemo provjeriti normalnost numeričkih varijabli "HEIGHT" i "WEIGHT koje ćemo koristiti tokom analize.
 
-#### Provjera normalnosti numeričkih varijabli
-```{r}
-qqnorm(dataset$AGE, main = "QQ Plot of AGE variable")
-qqline(dataset$AGE, col = "red", lwd = 2)
-```
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
 ```{r}
 qqnorm(dataset$HEIGHT, main = "QQ Plot of HEIGHT variable")
 qqline(dataset$HEIGHT, col = "red", lwd = 2)
 ```
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
+
 ```{r}
 qqnorm(dataset$WEIGHT, main = "QQ Plot of WEIGHT variable")
 qqline(dataset$WEIGHT, col = "red", lwd = 2)
 ```
-Iz grafova možemo zaključiti da su varijable AGE, HEIGHT i WEIGHT normalno distribuirane.
+
+Iz grafova možemo naslutiti kako se radi o naizgled normalno distribuiranim varijablama.
 \
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-Pogledajmo konkretne p-vrijednosti Shapiro-Wilkovog testa normalnosti.
-```{r}
-shapiro.test(dataset$AGE)
-```
-Uz p-value od 0.068 uz razinu značajnosti od 0.2 odbacujemo nultu hipotezu i zaključujemo da varijabla AGE nije normalno distribuirana.
+Pogledajmo sada konkretne p-vrijednosti Shapiro-Wilkovog testa normalnosti kako bi ustanovili pripadaju li ove varijable uistinu normalnoj distribuciji.
+
+H0: Varijabla je normalno distribuirana
+H1: Varijabla nije normalno distribuirana
 
 ```{r}
 shapiro.test(dataset$HEIGHT)
 ```
-Za varijablu HEIGHT također zaključujemo da nije normalno distribuirana.
+Shapiro-Wilkov test normalnosti nam daje p-vrijednost 0.1028 uz razinu značajnosti 0.2, što znači da odbacujemo nultu hipotezu i zaključujemo kako varijabla HEIGHT nije normalno distribuirana
 
 ```{r}
 shapiro.test(dataset$WEIGHT)
 ```
-Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 uz razinu značajnosti od 0.2, što znači da ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT normalno distribuirana.
+Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81, što znači da uz razinu značajnosti 0.2 ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT uistinu normalno distribuirana.
+
+Iako varijabla HEIGHT nije normalna osim što njen histogram donekle nalikuje na normalnu distribuciju, pozivamo se na robusnost ANOVA testa i T-testa te ga ipak provodimo na podacima uz pretpostavku da su podaci nezavisni stoga ćemo nad rezultatima tih testova i donositi zaključke
+
+### Usporedba srednjih visina za četiri grupe osobnosti
+
+Za usporedbu srednjih visina za četiri grupe osobnosti primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine za četiri grupe osobnosti.
 \
-Iako podaci nisu normalni osim što histogrami donekle nalikuju na normalnu distribuciju, pozivamo se na robusnost T-testa i HI^2-testa te ih ipak provodimo na podacima uz pretpostavku da su podaci nezavisni stoga ćemo nad rezultatima tih testova i donositi zaključke
-
-
-Primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine za četiri grupe osobnosti.
-
 Postavljamo hipoteze, neka je mi-i prosječna vrijednost visina. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
 
   H0: mi1 = mi2 = mi3 = mi4
   
   H1: barem dva mi-i nisu jednaka.
   
-Za ovakvo postavljene hipoteze nije prikladno koristiti t-test više puta zbog nakupljanja greške prve vrste.
-Stoga, metoda koju ćemo koristiti jest ANOVA (Analysis of Variance). ANOVA se provodi uz pretpostavku
-normalnosti distribucije reziduala, da su varijance među grupama iste i da su podaci
-među grupama nezavisni.
+Za hipoteze postavljene na ovaj način, nije preporučljivo koristiti t-test više puta zbog povećanja rizika od greške tipa I. Stoga, odabrali smo ANOVA (Analiza varijance) kao odgovarajuću metodu. ANOVA se primjenjuje uz pretpostavke normalnosti distribucije reziduala, jednakih varijanci između grupa i nezavisnosti podataka unutar grupa.
 
-Prije provedbe ANOVA-e moramo pokazati da su varijance jednake.
+Prije provedbe ANOVA-e moramo pokazati da su varijance grupa jednake.
 
-Provest ćemo statistički test koji testira hipoteze:
+
+Proučimo varijance visina za pojedine grupe osobnosti:
+```{r}
+vars_height <- aggregate(HEIGHT ~ GROUP, data = dataset, var)
+vars_height
+```
+
+
+Provest ćemo Bartlettov test o jednakosti varijanci koji testira hipoteze:
 
   H0: varijance su jednake.
   H1: barem dvije varijance nisu jednake.
   
-Tu ćemo se pozvati na Bartlettov test o jednakosti varijanci:
 ```{r}
 bartlett.test(HEIGHT ~ GROUP, data=dataset)
 ```
 Vidimo da je p-vrijednost velika te zato ne odbacujemo nultu hipotezu te zaključujemo da su varijance među grupama jednake.
 
+Sada smo sigurni da možemo provesti ANOVA-u.
 
+Na sljedećem grafu možemo vidjeti distribucije pojedinih grupa osobnosti s obzirom na njihove visine.
+```{r}
+ggplot(dataset, aes(x = HEIGHT, fill = GROUP)) + 
+  geom_bar(alpha = 0.75) + 
+  labs(x = "Height", y = "Count", fill = "") + 
+  scale_fill_ordinal()
+```
 
 ```{r}
 ggplot(dataset, aes(x = GROUP,y = HEIGHT)) + 
@@ -475,10 +375,7 @@ ggplot(dataset, aes(x = GROUP,y = HEIGHT)) +
        y = "Height", 
        title = "Box-plots of height by personality group")
 ```
-```{r}
-ggplot(dataset, aes(x = HEIGHT, fill = GROUP)) + 
-  geom_bar()
-```
+Iz ovog grafa možemo vidjeti distribucije pojedinih grupa osobnosti u obliku box-plota iz kojih dobijemo vizualnu reprezentaciju njihovih medijana i interkvartilnih rangova. Možemo vidjeti kako su medijani grupa "Analysts" i "Explorers" na rubu granica interkvartilnog ranga grupe "Sentinels", stoga ovdje možemo očekivati neke probleme oko jednakosti sredina i standardnih devijacija ovih grupa.
 
 Pogledajmo srednje vrijednosti visina za pojedine grupe osobnosti:
 ```{r}
@@ -486,9 +383,8 @@ means_height <- aggregate(HEIGHT ~ GROUP, data = dataset, mean)
 means_height
 ```
 
+Sad provedimo test:
 
-H0: Nema statistički značajne razlike u srednjim visinama između grupa.
-H1: Postoji statistički značajna razlika u srednjim visinama između barem jedne od grupa.
 ```{r}
 model <- aov(HEIGHT ~ GROUP, data = dataset)
 summary(model)
@@ -496,25 +392,60 @@ summary(model)
 Obzirom na p-vrijednost od 0.47 ne odbacujemo nultu hipotezu. To sugerira da nema dovoljno dokaza za zaključak da postoje značajne razlike u prosječnoj visini između četiri skupine osobnosti.
 
 
-### Usporedba srednjih težina i visina za ekstroverte i introverte
+### Usporedba srednjih težina za ekstroverte i introverte
 
 
-Sada ćemo usporediti srednje vrijednosti visina ekstroverata i introverata koristeći stupce "IE" i "WEIGHT" koristeći t-test.
-
-Ponovit ćemo postupak ali ovaj put uspoređivati srednje vrijednosti visina ekstroverata i introverata.
-
-H0: Nema statistički značajne razlike u srednjim visinama između ekstroverta i introverta.
-H1: Postoji statistički značajna razlika u srednjim visinama između ekstroverta i introverta.
+Na sljedećem grafu možemo vidjeti distribuciju introverata/ekstroverata obzirom na njihove težine.
 ```{r}
-ekstroverti <- dataset[dataset$IE == "E", ]
-introverti <- dataset[dataset$IE == "I", ]
-
-t_test <- t.test(ekstroverti$HEIGHT, introverti$HEIGHT)
-t_test
-t_test$p.value
-cat("P vrijednost je", t_test$p.value, "\n")
+ggplot(dataset, aes(x = WEIGHT, fill = IE)) + 
+  geom_histogram(alpha = 0.75) + 
+  labs(x = "Height", y = "Count", fill = "") + 
+  scale_fill_ordinal()
 ```
-Na temelju rezultata testa zaključujemo da ne postoji značajna razlika između visina introverata i ekstroverata.
+Sada ćemo usporediti srednje vrijednosti težina ekstroverata i introverata koristeći stupce "IE" i "WEIGHT" koristeći t-test.
+
+Prije provedbe t-testa moramo profesti F-test da provjerimo jednakost varijanci budući da su nepoznate.
+
+
+Pogledajmo prije varijance težina introverata:
+```{r}
+vars_weight <- aggregate(WEIGHT ~ IE, data = dataset, var)
+vars_weight
+```
+
+
+F-test ćemo provesti sa hipotezama:
+
+  H0: varijance su jednake
+  
+  H1: varijance nisu jednake
+  
+```{r}
+f_test <- var.test(HEIGHT ~ IE, data = dataset)
+f_test
+```
+F-test daje p-vrijednost 0.6418 te zaključujemo da su varijance jednake.
+
+Sada možemo provesti T-test uz jednake, ali nepoznate varijance.
+
+Pogledajmo srednje vrijednosti težina ekstroverata i introverata.
+```{r}
+means_weight <- aggregate(WEIGHT ~ IE, data = dataset, mean)
+means_weight
+```
+
+
+Test provodimo sa hipotezama:
+
+  H0: srednje vrijednosti težine jednake su za ekstroverte i introverte
+  
+  H1: srednje vrijednosti težine nisu jednake za ekstroverte i introverte
+
+```{r}
+t_test <- t.test(HEIGHT ~ IE, data = dataset, var.equal = TRUE)
+t_test
+```
+Zbog velike p-vrijednosti ne odbacujemo nultu hipotezu te zaključujemo da su srednje vrijednosti visina za introverte i ekstroverte jednake.
 
 
 ## Tip ličnosti na temelju pojedinih karakteristika
@@ -772,6 +703,21 @@ Iz polja p-value koji je veći od 0.05 zaključujemo kako na temelju ovih podata
 
 # Zaključak
 
+```{r}
+qqnorm(dataset$AGE, main = "QQ Plot of AGE variable")
+qqline(dataset$AGE, col = "red", lwd = 2)
+```
+
+
+
+
+
+
+\
+```{r}
+shapiro.test(dataset$AGE)
+```
+Uz p-value od 0.068 uz razinu značajnosti od 0.2 odbacujemo nultu hipotezu i zaključujemo da varijabla AGE nije normalno distribuirana.
 (---prazan prostor za zaključak---)
 
 
