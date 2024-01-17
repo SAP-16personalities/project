@@ -135,7 +135,7 @@ ggplot(dataset, aes(x = MBTI, fill = MBTI)) +
   scale_fill_ordinal() + 
   theme(axis.text.x = element_text(angle = 45)) + 
   labs(y = "Count")
-```
+```                                                                                      
 [Razlikujemo 16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
 ```{r}
 ggplot(dataset, aes(x = GROUP, fill = GROUP)) + 
@@ -233,7 +233,8 @@ Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke akt
 
 ## Razlika u visini/težini obzirom na tip ličnosti
 
-U našem podatkovnom skupu imamo stupce "WEIGHT", "HEIGHT" i "MBTI" čija se međusobna raspodjela vidi na sljedećem grafu:
+U našem podatkovnom skupu imamo stupce "WEIGHT", "HEIGHT" i "GROUP" (stupac u kojem je 16 tipova osobnosti raspoređeno u 4 grupe) čija se međusobna raspodjela vidi na sljedećem grafu:
+
 ```{r}
 ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROUP)) + 
   geom_point() + 
@@ -246,29 +247,24 @@ ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROU
               formula = y ~ x) + 
   labs(x = "Height", y = "Weight", color = "MBTI group")
 ```
-Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati stupce "HEIGHT" i "IE" (introvert/ekstrovert) podatkovnog okvira.
-```{r}
-contingency_table <- table(dataset$HEIGHTgroup, dataset$IE)
-contingency_table
-check_expected(contingency_table)
-```
-```{r}
-chisq <- chisq.test(contingency_table)
-chisq
-```
-Na temelju rezultata testa zaključujemo da ekstroverstnost nema vete sa visinom.
 
-Sada ćemo postupak ponoviti i proučavati stupce "WEIGHT" i "JP" (produđivanje/opažanje).
+Primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine i težine za četiri grupe osobnosti.
+
+Prvo ćemo to učiniti za visinu.
 ```{r}
-contingency_table <- table(dataset$WEIGHTgroup, dataset$JP)
-contingency_table
-check_expected(contingency_table)
+model <- aov(HEIGHT ~ GROUP, data = dataset)
+summary(model)
 ```
+Obzirom na p-vrijednost od 0.47 ne odbacujemo nultu hipotezu. To sugerira da nema dovoljno dokaza za zaključak da postoje značajne razlike u prosječnoj visini između četiri skupine osobnosti.
+
+Zatim ćemo isto provesti i za težinu.
 ```{r}
-chisq <- chisq.test(contingency_table)
-chisq
+model <- aov(WEIGHT ~ GROUP, data = dataset)
+summary(model)
 ```
-Na temelju rezultata testa zaključujemo da prosuđivanje/opažanje nema veze sa visinom.
+Isto kao i u slučaju sa visinom, obzirom na p-vrijednost od 0.208 ne odbacujemo nultu hipotezu te zaključujemo da ne postoje značajne razlike u prosječnoj težini između četiri skupine osobnosti.
+
+
 
 
 
