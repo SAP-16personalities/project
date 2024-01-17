@@ -442,11 +442,11 @@ Iako podaci nisu normalni osim što histogrami donekle nalikuju na normalnu dist
 
 Primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine za četiri grupe osobnosti.
 
-Postavljamo hipoteze, neka je μi prosječna vrijednost visina. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
+Postavljamo hipoteze, neka je mi-i prosječna vrijednost visina. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
 
   H0: mi1 = mi2 = mi3 = mi4
   
-  H1: barem dva μi nisu jednaka.
+  H1: barem dva mi-i nisu jednaka.
   
 Za ovakvo postavljene hipoteze nije prikladno koristiti t-test više puta zbog nakupljanja greške prve vrste.
 Stoga, metoda koju ćemo koristiti jest ANOVA (Analysis of Variance). ANOVA se provodi uz pretpostavku
