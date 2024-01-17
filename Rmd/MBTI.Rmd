@@ -249,11 +249,54 @@ ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROU
 ```
 
 
-### Usporedba srednjih težina i visina za četiri grupe osobnosti
+### Usporedba srednjih visina za četiri grupe osobnosti
 
-Primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine i težine za četiri grupe osobnosti.
+Primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine za četiri grupe osobnosti.
 
-Prvo ćemo to učiniti za visinu.
+Postavljamo hipoteze, neka je μi prosječna vrijednost visina. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
+
+  H0: mi1 = mi2 = mi3 = mi4
+  
+  H1: barem dva μi nisu jednaka.
+  
+Za ovakvo postavljene hipoteze nije prikladno koristiti t-test više puta zbog nakupljanja greške prve vrste.
+Stoga, metoda koju ćemo koristiti jest ANOVA (Analysis of Variance). ANOVA se provodi uz pretpostavku
+normalnosti distribucije reziduala, da su varijance među grupama iste i da su podaci
+među grupama nezavisni.
+
+Prije provedbe ANOVA-e moramo pokazati da su varijance jednake.
+
+Provest ćemo statistički test koji testira hipoteze:
+
+  H0: varijance su jednake.
+  H1: barem dvije varijance nisu jednake.
+  
+Tu ćemo se pozvati na Bartlettov test o jednakosti varijanci:
+```{r}
+bartlett.test(HEIGHT ~ GROUP, data=dataset)
+```
+Vidimo da je p-vrijednost velika te zato ne odbacujemo nultu hipotezu te zaključujemo da su varijance među grupama jednake.
+
+
+
+```{r}
+ggplot(dataset, aes(x = GROUP,y = HEIGHT)) + 
+  geom_boxplot() + 
+  labs(x = "Personality groups", 
+       y = "Height", 
+       title = "Box-plots of height by personality group")
+```
+```{r}
+ggplot(dataset, aes(x = HEIGHT, fill = GROUP)) + 
+  geom_bar()
+```
+
+Pogledajmo srednje vrijednosti visina za pojedine grupe osobnosti:
+```{r}
+means_height <- aggregate(HEIGHT ~ GROUP, data = dataset, mean)
+means_height
+```
+
 
 H0: Nema statistički značajne razlike u srednjim visinama između grupa.
 H1: Postoji statistički značajna razlika u srednjim visinama između barem jedne od grupa.
@@ -264,35 +307,10 @@ summary(model)
 Obzirom na p-vrijednost od 0.47 ne odbacujemo nultu hipotezu. To sugerira da nema dovoljno dokaza za zaključak da postoje značajne razlike u prosječnoj visini između četiri skupine osobnosti.
 
 
-
-Zatim ćemo isto provesti i za težinu.
-
-H0: Nema statistički značajne razlike u srednjim težinama između grupa.
-H1: Postoji statistički značajna razlika u srednjim težinama između barem jedne od grupa.
-```{r}
-model <- aov(WEIGHT ~ GROUP, data = dataset)
-summary(model)
-```
-Isto kao i u slučaju sa visinom, obzirom na p-vrijednost od 0.208 ne odbacujemo nultu hipotezu te zaključujemo da ne postoje značajne razlike u prosječnoj težini između četiri skupine osobnosti.
-
-
-
 ### Usporedba srednjih težina i visina za ekstroverte i introverte
 
 
-Sada ćemo usporediti srednje vrijednosti težina ekstroverata i introverata koristeći stupce "IE" i "WEIGHT" koristeći t-test.
-
-H0: Nema statistički značajne razlike u srednjim težinama između ekstroverta i introverta.
-H1: Postoji statistički značajna razlika u srednjim težinama između ekstroverta i introverta.
-```{r}
-ekstroverti <- dataset[dataset$IE == "E", ]
-introverti <- dataset[dataset$IE == "I", ]
-
-t_test <- t.test(ekstroverti$WEIGHT, introverti$WEIGHT)
-t_test
-cat("P vrijednost je", t_test$p.value, "\n")
-```
-Na temelju rezultata testa zaključujemo da ne postoji značajna razlika između težina introverata i ekstroverata.
+Sada ćemo usporediti srednje vrijednosti visina ekstroverata i introverata koristeći stupce "IE" i "WEIGHT" koristeći t-test.
 
 Ponovit ćemo postupak ali ovaj put uspoređivati srednje vrijednosti visina ekstroverata i introverata.
 
