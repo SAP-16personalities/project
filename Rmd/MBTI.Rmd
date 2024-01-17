@@ -112,98 +112,6 @@ glimpse(dataset)
 ***
 # Analiza podatkovnog skupa
 
-## Provjera normalnosti numeričkih varijabli
-```{r}
-qqnorm(dataset$AGE, main = "QQ Plot of AGE variable")
-qqline(dataset$AGE, col = "red", lwd = 2)
-```
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-```{r}
-qqnorm(dataset$HEIGHT, main = "QQ Plot of HEIGHT variable")
-qqline(dataset$HEIGHT, col = "red", lwd = 2)
-```
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-```{r}
-qqnorm(dataset$WEIGHT, main = "QQ Plot of WEIGHT variable")
-qqline(dataset$WEIGHT, col = "red", lwd = 2)
-```
-Iz grafova možemo zaključiti da su varijable AGE, HEIGHT i WEIGHT normalno distribuirane.
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-Pogledajmo konkretne p-vrijednosti Shapiro-Wilkovog testa normalnosti.
-```{r}
-shapiro.test(dataset$AGE)
-```
-Uz p-value od 0.068 uz razinu značajnosti od 0.2 odbacujemo nultu hipotezu i zaključujemo da varijabla AGE nije normalno distribuirana.
-
-```{r}
-shapiro.test(dataset$HEIGHT)
-```
-Za varijablu HEIGHT također zaključujemo da nije normalno distribuirana.
-
-```{r}
-shapiro.test(dataset$WEIGHT)
-```
-Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 uz razinu značajnosti od 0.2, što znači da ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT normalno distribuirana.
-\
-Iako podaci nisu normalni osim što histogrami donekle nalikuju na normalnu distribuciju, pozivamo se na robusnost T-testa i HI^2-testa te ih ipak provodimo na podacima uz pretpostavku da su podaci nezavisni stoga ćemo nad rezultatima tih testova i donositi zaključke
-
 ## Veza između tipa ličnosti i načina držanja
 
 U našem podatkovnom skupu imamo stupce "POSTURE" i "MBTI".
@@ -438,6 +346,99 @@ ggplot(dataset, aes(x = dataset$HEIGHT, y = dataset$WEIGHT, color = dataset$GROU
 
 
 ### Usporedba srednjih visina za četiri grupe osobnosti
+
+#### Provjera normalnosti numeričkih varijabli
+```{r}
+qqnorm(dataset$AGE, main = "QQ Plot of AGE variable")
+qqline(dataset$AGE, col = "red", lwd = 2)
+```
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+```{r}
+qqnorm(dataset$HEIGHT, main = "QQ Plot of HEIGHT variable")
+qqline(dataset$HEIGHT, col = "red", lwd = 2)
+```
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+```{r}
+qqnorm(dataset$WEIGHT, main = "QQ Plot of WEIGHT variable")
+qqline(dataset$WEIGHT, col = "red", lwd = 2)
+```
+Iz grafova možemo zaključiti da su varijable AGE, HEIGHT i WEIGHT normalno distribuirane.
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Pogledajmo konkretne p-vrijednosti Shapiro-Wilkovog testa normalnosti.
+```{r}
+shapiro.test(dataset$AGE)
+```
+Uz p-value od 0.068 uz razinu značajnosti od 0.2 odbacujemo nultu hipotezu i zaključujemo da varijabla AGE nije normalno distribuirana.
+
+```{r}
+shapiro.test(dataset$HEIGHT)
+```
+Za varijablu HEIGHT također zaključujemo da nije normalno distribuirana.
+
+```{r}
+shapiro.test(dataset$WEIGHT)
+```
+Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 uz razinu značajnosti od 0.2, što znači da ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT normalno distribuirana.
+\
+Iako podaci nisu normalni osim što histogrami donekle nalikuju na normalnu distribuciju, pozivamo se na robusnost T-testa i HI^2-testa te ih ipak provodimo na podacima uz pretpostavku da su podaci nezavisni stoga ćemo nad rezultatima tih testova i donositi zaključke
+
 
 Primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine za četiri grupe osobnosti.
 
