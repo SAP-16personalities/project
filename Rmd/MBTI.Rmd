@@ -19,7 +19,6 @@ library(nortest)
 library(leaps)
 ```
 
-
 ```{r, echo=F}
 rm(list = ls()) # uklanjanje svih varijabli iz okoline
 ```
@@ -58,7 +57,9 @@ Faktoriziramo i modificiramo stupce "SEX", "ACTIVITY LEVEL", "MBTI", "POSTURE"  
 ```{r}
 dataset$SEX <- as.factor(dataset$SEX)
 dataset$`ACTIVITY LEVEL` <- as.factor(dataset$`ACTIVITY LEVEL`)
-dataset$`ACTIVITY LEVEL` <- factor(dataset$`ACTIVITY LEVEL`, levels = c("Low", "Moderate", "High"))
+dataset$`ACTIVITY LEVEL` <- factor(
+  dataset$`ACTIVITY LEVEL`, levels = c("Low", "Moderate", "High")
+  )
 dataset$MBTI <- as.factor(dataset$MBTI)
 dataset$POSTURE <- as.factor(dataset$POSTURE)
 dataset$POSTURE <- factor(dataset$POSTURE, levels = c("A", "B", "C", "D"), 
@@ -90,11 +91,9 @@ dataset$WEIGHT <- round(dataset$WEIGHT * 0.45359237, 1)
 Dodat ćemo neke nove stupce pomoću kojih ćemo grupirati podatke u manje grupe kako bismo ih mogli bolje analizirati.
 ```{r}
 dataset$GROUP <- as.factor(color(dataset$MBTI)) 
-dataset$IS_ACTIVE <- as.factor(ifelse(dataset$ACTIVITY_LEVEL == "Low", "Inactive", "Active"))
-dataset$HEIGHTgroup <- as.factor(height_category(dataset$HEIGHT))
-dataset$HEIGHTgroup <- factor(dataset$HEIGHTgroup, levels = c("Short", "Medium height", "Tall"))
-dataset$WEIGHTgroup <- as.factor(weight_category(dataset$WEIGHT))
-dataset$WEIGHTgroup <- factor(dataset$WEIGHTgroup, levels = c("Light", "Medium weight", "Heavy"))
+dataset$IS_ACTIVE <- as.factor(
+  ifelse(dataset$ACTIVITY_LEVEL == "Low", "Inactive", "Active")
+  )
 dataset$IE <- as.factor(substring(dataset$MBTI, 1, 1))
 dataset$SN <- as.factor(substr(dataset$MBTI, 2, 2))
 dataset$TF <- as.factor(substr(dataset$MBTI, 3, 3))
@@ -113,6 +112,98 @@ glimpse(dataset)
 ***
 # Analiza podatkovnog skupa
 
+## Provjera normalnosti numeričkih varijabli
+```{r}
+qqnorm(dataset$AGE, main = "QQ Plot of AGE variable")
+qqline(dataset$AGE, col = "red", lwd = 2)
+```
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+```{r}
+qqnorm(dataset$HEIGHT, main = "QQ Plot of HEIGHT variable")
+qqline(dataset$HEIGHT, col = "red", lwd = 2)
+```
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+```{r}
+qqnorm(dataset$WEIGHT, main = "QQ Plot of WEIGHT variable")
+qqline(dataset$WEIGHT, col = "red", lwd = 2)
+```
+Iz grafova možemo zaključiti da su varijable AGE, HEIGHT i WEIGHT normalno distribuirane.
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Pogledajmo konkretne p-vrijednosti Shapiro-Wilkovog testa normalnosti.
+```{r}
+shapiro.test(dataset$AGE)
+```
+Uz p-value od 0.068 uz razinu značajnosti od 0.2 odbacujemo nultu hipotezu i zaključujemo da varijabla AGE nije normalno distribuirana.
+
+```{r}
+shapiro.test(dataset$HEIGHT)
+```
+Za varijablu HEIGHT također zaključujemo da nije normalno distribuirana.
+
+```{r}
+shapiro.test(dataset$WEIGHT)
+```
+Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 uz razinu značajnosti od 0.2, što znači da ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT normalno distribuirana.
+\
+Iako podaci nisu normalni osim što histogrami donekle nalikuju na normalnu distribuciju, pozivamo se na robusnost T-testa i HI^2-testa te ih ipak provodimo na podacima uz pretpostavku da su podaci nezavisni stoga ćemo nad rezultatima tih testova i donositi zaključke
+
 ## Veza između tipa ličnosti i načina držanja
 
 U našem podatkovnom skupu imamo stupce "POSTURE" i "MBTI".
@@ -127,7 +218,23 @@ ggplot(dataset, aes(x = POSTURE, fill = POSTURE)) +
 ```
 
 Imamo 4 klase načina držanja: idealno, kifoza/lordoza, ravna leđa, nagnuto.
-
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 Stupac "MBTI" poprima vrijednosti:
 ```{r}
 ggplot(dataset, aes(x = MBTI, fill = MBTI)) + 
@@ -137,6 +244,22 @@ ggplot(dataset, aes(x = MBTI, fill = MBTI)) +
   labs(y = "Count")
 ```                                                                                      
 [Razlikujemo 16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 ```{r}
 ggplot(dataset, aes(x = GROUP, fill = GROUP)) + 
   geom_bar() + 
@@ -194,6 +317,17 @@ chisq <- chisq.test(contingency_table)
 chisq
 ```
 Na temelju rezultata testa zaključujemo da prosuđivanje/opažanje ima veze sa načinom držanja.
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 
 
 
@@ -207,10 +341,27 @@ ggplot(dataset, aes(x = IS_ACTIVE, fill = IS_ACTIVE)) +
   labs(x = "Activity level", fill = "Activity level", y = "Count")
 ```
 Prema ovom grafu ljude dijelimo u fizički aktivne i one neaktivne.
-
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 Za koeficijent ekstrovertnosti imamo stupac sa nazivom "E":
 ```{r}
-ggplot(dataset, aes(x = E, fill = E>I)) + geom_bar() + 
+ggplot(dataset, aes(x = E, fill = E > I)) + geom_bar() + 
   scale_fill_ordinal() + 
   labs(x = "Extroversion", fill = "Extrovert", y = "Count")
 ```
@@ -227,8 +378,45 @@ chisq <- chisq.test(contingency_table)
 chisq
 ```
 Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke aktivnosti i ekstroverstnosti.
-
-
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 
 
 ## Razlika u visini/težini obzirom na tip ličnosti
@@ -275,45 +463,97 @@ Nismo mogli izračunati točnu vezu s MBTI tipom osobnosti jer je to diskretna v
 
 ```{r}
 print("Prvi model za J i P karakteristike")
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
+              dataset$SEX + 
+              dataset$AGE
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova J prvim modelom", r_squared))
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
+              dataset$SEX + 
+              dataset$AGE
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova P prvim modelom", r_squared))
 
 print("Drugi model za J i P karakteristike")
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
+    dataset$WEIGHT + 
+    dataset$SEX + 
+    dataset$AGE + 
+    dataset$ACTIVITY_LEVEL
+  )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova J drugim modelom", r_squared))
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL)
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              dataset$AGE + 
+              dataset$ACTIVITY_LEVEL
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova P drugim modelom", r_squared))
 
 print("Treci model za J i P karakteristike")
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              dataset$AGE + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova J trecim modelom", r_squared))
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              dataset$AGE + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova P trecim modelom", r_squared))
 ```
 Vidimo kako je najprikladniji ispao treći model jer ima najveću R kvadrat vrijednost. Testirajmo točnost modela
 ```{r}
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              dataset$AGE + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 probs1 <- predict(model, newdata = dataset, type = "response")
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              dataset$AGE + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 probs2 <- predict(model, newdata = dataset, type = "response")
 
@@ -330,34 +570,76 @@ Možemo ponoviti testiranje za još jednu karaktristiku, npr. razmišljanje i os
 
 ```{r}
 print("Prvi model za F i T karakteristike")
-model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + 
+              dataset$SEX + 
+              dataset$AGE
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova F prvim modelom", r_squared))
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$SEX + dataset$AGE)
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + 
+              dataset$SEX + 
+              dataset$AGE
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova T prvim modelom", r_squared))
 
 print("Drugi model za F i T karakteristike")
-model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$F ~ dataset$HEIGHT +
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              log(dataset$AGE) + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 +
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova F drugim modelom", r_squared))
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              log(dataset$AGE) + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova T drugim modelom", r_squared))
 
 print("Treci model za F i T karakteristike")
-model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              dataset$AGE + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova F trecim modelom", r_squared))
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + dataset$AGE + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$T ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX +
+              dataset$AGE +
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 +
+              dataset$PAIN_2 + 
+              dataset$PAIN_3 +
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova T trecim modelom", r_squared))
@@ -366,11 +648,29 @@ print(paste("R kvadrat za predikciju slova T trecim modelom", r_squared))
 Drugi model se pokazuje kao najbolji, testiramo
 
 ```{r}
-model <- lm(formula = dataset$F ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$F ~ dataset$HEIGHT + 
+              dataset$WEIGHT + 
+              dataset$SEX + 
+              log(dataset$AGE) + 
+              dataset$ACTIVITY_LEVEL + 
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 +
+              dataset$PAIN_3 + 
+              dataset$PAIN_4
+            )
 model_summary <- summary(model)
 probs1 <- predict(model, newdata = dataset, type = "response")
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT + dataset$WEIGHT + dataset$SEX + log(dataset$AGE) + dataset$ACTIVITY_LEVEL + dataset$PAIN_1 + dataset$PAIN_2 + dataset$PAIN_3 + dataset$PAIN_4)
+model <- lm(formula = dataset$T ~ dataset$HEIGHT +
+              dataset$WEIGHT +
+              dataset$SEX +
+              log(dataset$AGE) +
+              dataset$ACTIVITY_LEVEL +
+              dataset$PAIN_1 + 
+              dataset$PAIN_2 +
+              dataset$PAIN_3 +
+              dataset$PAIN_4)
+
 model_summary <- summary(model)
 probs2 <- predict(model, newdata = dataset, type = "response")
 
@@ -394,7 +694,7 @@ subset_result <- subset(dataset, AGE < 46 & substr(MBTI, 1, 1) == "E")
 Eyoung <- nrow(subset_result)
 total_group1 <- sum(dataset$AGE <= 45)
 
-subset_result <- subset(dataset, AGE >45 & substr(MBTI, 1, 1) == "E")
+subset_result <- subset(dataset, AGE > 45 & substr(MBTI, 1, 1) == "E")
 Eold <- nrow(subset_result)
 total_group2 <- sum(dataset$AGE > 45)
 
