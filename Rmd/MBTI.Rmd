@@ -7,6 +7,7 @@ output:
   html_document:
     df_print: paged
   word_document: default
+urlcolor: blue
 ---
 
 ```{r setup, include=FALSE, warning=F}
@@ -19,6 +20,8 @@ library(nortest)
 library(leaps)
 library(RColorBrewer)
 library(knitr)
+library(nnet)
+library(neuralnet)
 ```
 
 ```{r, echo=F}
@@ -52,6 +55,16 @@ head(dataset)
 tail(dataset)
 glimpse(dataset)
 ```
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 
 ## Uređivanje podataka podatkovnog skupa
 
@@ -101,17 +114,54 @@ dataset$SN <- as.factor(substr(dataset$MBTI, 2, 2))
 dataset$TF <- as.factor(substr(dataset$MBTI, 3, 3))
 dataset$JP <- as.factor(substr(dataset$MBTI, 4, 4))
 ```
-
-
+\
+\
+\
+\
+\
+\
+\
 Ovako naš podatkovni skup izgleda nakon uređivanja njegovih podataka.
 ```{r}
 head(dataset)
 tail(dataset)
 glimpse(dataset)
 ```
-
-
 ***
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
 # Analiza podatkovnog skupa
 
 ## Veza između tipa ličnosti i načina držanja
@@ -143,7 +193,7 @@ ggplot(dataset, aes(x = POSTURE, fill = POSTURE)) +
 \
 \
 \
-Također imamo stupac "MBTI" koji predstavlja tipove ličnosti i razlikujemo razlikujemo [16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
+Također imamo stupac "MBTI" koji predstavlja tipove ličnosti i razlikujemo [16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
 ```{r}
 ggplot(dataset, aes(x = MBTI, fill = MBTI)) + 
   geom_bar(color = "black") + 
@@ -177,6 +227,23 @@ ggplot(dataset, aes(x = GROUP, fill = GROUP)) +
   theme_classic() + 
   theme(legend.position = "none")
 ```
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 Vizualiziramo podatke iz stupca "POSTURE" u odnosu na podatke iz stupca "GROUP" kako bismo vidjeli ima li veze između tipa ličnosti i načina držanja.
 
 ```{r}
@@ -206,7 +273,7 @@ chisq
 ```
 Provedbom hi kvadrat testa dobivamo iznimno maleni p-value, iz čega slijedi da odbacujemo nultu hipotezu uz razinu značajnosti od 0.2 i odbacujemo nultu hipotezu te zaključujemo da su ekstrovertnost i način držanja zavisne varijable
 
-Isti postupak ćemo ponoviti i za raspoznavanje/intuiciju, razmišljanje/osjećanje te produđivanje/opažanje.
+Isti postupak ćemo ponoviti i za raspoznavanje/intuiciju.
 \
 \
 H0: POSTURE i SN su nezavisne varijable
@@ -222,51 +289,6 @@ chisq <- chisq.test(contingency_table)
 chisq
 ```
 Hi kvadrat test nam u ovom slučaju daje p-value od 0.7, iz čega slijedi da ne možemo odbaciti nultu hipotezu te zaključujemo da raspoznavanje/intuicija i način držanja ne ovise jedno o drugome.
-\
-\
-H0: POSTURE i TF su nezavisne varijable
-
-H1: POSTURE i TF su zavisne varijable
-```{r}
-contingency_table <- table(dataset$POSTURE, dataset$TF)
-kable(contingency_table, caption = "Kontingencijska tablica za POSTURE i TF", align = "r")
-check_expected(contingency_table)
-```
-```{r}
-chisq <- chisq.test(contingency_table)
-chisq
-```
-Na temelju dobivene vrijednosti p-value 0.32 ne možemo odbaciti nultu hipotezu te zaključujemo da razmišljanje/osjećanje i način držanja ne ovise jedno o drugome.
-\
-\
-H0: POSTURE i JP su nezavisne varijable
-
-H1: POSTURE i JP su zavisne varijable
-
-```{r}
-contingency_table <- table(dataset$POSTURE, dataset$JP)
-kable(contingency_table, caption = "Kontingencijska tablica za POSTURE i JP", align = "r")
-check_expected(contingency_table)
-```
-
-```{r}
-chisq <- chisq.test(contingency_table)
-chisq
-```
-p-value u ovom slučaju nam iznosi 0.1109 što je manje od razine značajnosti iz čega slijedi da odbacujemo nultu hipotezu te zaključujemo da produživanje/opažanje i način držanja ovise jedno o drugome.
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-
-
 
 ## Veza između fizičke aktivnosti i razine ekstrovertiranosti
 
@@ -285,19 +307,7 @@ Prema ovom grafu ljude dijelimo u fizički aktivne i one neaktivne.
 \
 \
 \
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
+
 Za koeficijent ekstrovertnosti imamo stupac sa nazivom "E":
 ```{r}
 ggplot(dataset, aes(x = E, fill = E > I)) +
@@ -308,11 +318,28 @@ ggplot(dataset, aes(x = E, fill = E > I)) +
   theme_bw()
 ```
 Na grafu vidimo raspodjelu ljudi koji imaju veći koeficijent ekstrovertnosti od koeficijenta introvertnosti.
-
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati stupce "IS_ACTIVE" (stupac koji mjeri razinu aktivnosti osobe) i "IE" (introvert/ekstrovert) podatkovnog okvira.
 ```{r}
 contingency_table <- table(dataset$IS_ACTIVE, dataset$IE)
-contingency_table
+kable(contingency_table, caption = "Kontingencijska tablica za IS_ACTIVE i IE", align = "r")
 check_expected(contingency_table)
 ```
 ```{r, warning=F}
@@ -321,6 +348,57 @@ chisq
 ```
 Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke aktivnosti i ekstroverstnosti.
 
+Sada ćemo provesti t-test gdje ćemo usporediti srednje vrijednosti stupca "E" (koeficijent ekstrovertnosti) za fizički aktivne i neaktivne osobe, kako bi usporedili rezultate t-testa s dobivenim rezultatima hi kvadrat testa.
+
+Prije provedbe t-testa provest ćemo f-test kako bi provjerili jednakost varijanci pošto su one nepoznate.
+\
+\
+H0: varijance su jednake
+  
+H1: varijance nisu jednake
+```{r}
+f_test <- var.test(E ~ IS_ACTIVE, data = dataset)
+f_test
+```
+Provedbom f-testa dobili smo p-value od 0.8948 na temelju kojeg uz razinu značajnosti 0.2 ne odbacujemo nultu hipotezu te zaključujemo da su varijance jednake.
+
+Sada ćemo provesti t-test:
+```{r}
+t_test <- t.test(E ~ IS_ACTIVE, data = dataset, var.equal = TRUE)
+t_test
+```
+Na temelju rezultata t-testa ne odbacujemo nultu hipotezu te zaključujemo da ne postoji statistički značajna razlika između srednjih vrijednosti koeficijenta ekstrovertnosti za fizički aktivne i neaktivne osobe, što je u skladu s rezultatima hi kvadrat testa koji nam kaže da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 
 ## Razlika u visini/težini obzirom na tip ličnosti
 
@@ -332,7 +410,18 @@ Prvo ćemo provjeriti normalnost numeričkih varijabli "HEIGHT" i "WEIGHT koje �
 qqnorm(dataset$HEIGHT, main = "QQ Plot of HEIGHT variable")
 qqline(dataset$HEIGHT, col = "red", lwd = 2)
 ```
-
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 ```{r}
 qqnorm(dataset$WEIGHT, main = "QQ Plot of WEIGHT variable")
 qqline(dataset$WEIGHT, col = "red", lwd = 2)
@@ -353,7 +442,10 @@ H1: Varijabla nije normalno distribuirana
 shapiro.test(dataset$HEIGHT)
 ```
 Shapiro-Wilkov test normalnosti nam daje p-vrijednost 0.1028 uz razinu značajnosti 0.2, što znači da odbacujemo nultu hipotezu i zaključujemo kako varijabla HEIGHT nije normalno distribuirana
-
+\
+\
+\
+\
 Provedimo isti test za varijablu WEIGHT:
 \
 \
@@ -437,8 +529,11 @@ Pogledajmo srednje vrijednosti visina za pojedine grupe osobnosti:
 means_height <- aggregate(HEIGHT ~ GROUP, data = dataset, mean)
 means_height
 ```
-
-Sad provedimo test:
+\
+\
+\
+\
+Sada provedimo test:
 
 ```{r}
 model <- aov(HEIGHT ~ GROUP, data = dataset)
@@ -448,6 +543,30 @@ Obzirom na p-vrijednost od 0.47 ne odbacujemo nultu hipotezu. To sugerira da nem
 
 
 ### Usporedba srednjih težina za ekstroverte i introverte
+
+Obzirom da u ovom koraku varijablu WEIGHT grupiramo u dvije grupe, težine ekstroverata i introverata, također moramo i provjeriti je li varijabla WEIGHT normalno distribuirana za svaku grupu.
+```{r}
+weight_extroverts <- subset(dataset, IE == "E")$WEIGHT
+weight_introverts <- subset(dataset, IE == "I")$WEIGHT
+```
+```{r}
+qqnorm(weight_extroverts, main = "QQ Plot of HEIGHT variable for extroverts")
+qqline(weight_extroverts, col = "red", lwd = 2)
+```
+```{r}
+qqnorm(weight_introverts, main = "QQ Plot of HEIGHT variable for introverts")
+qqline(weight_introverts, col = "red", lwd = 2)
+```
+Sada provodimo Shapiro-Wilkov test normalnosti varijable HEIGHT za svaku grupu:
+```{r}
+shapiro.test(weight_extroverts)
+```
+Uz dobiveni p-value od 0.96 i razinu značajnosti od 0.2 ne odbacujemo nultu hipotezu te zaključujemo da je varijabla HEIGHT normalno distribuirana za grupu ekstroverata.
+
+```{r}
+shapiro.test(weight_introverts)
+```
+Dobiveni p-value za WEIGHT za introverte iznosi 0.1261 što je manje od 0.2, stoga odbacujemo nultu hipotezu te zaključujemo da varijabla HEIGHT nije normalno distribuirana za grupu introverata, no pozivamo se na robusnost t-testa na normalnost podataka.
 
 
 Na sljedećem grafu možemo vidjeti distribuciju introverata/ekstroverata obzirom na njihove težine.
@@ -461,7 +580,7 @@ ggplot(dataset, aes(x = WEIGHT, fill = IE)) +
 ```
 Sada ćemo usporediti srednje vrijednosti težina ekstroverata i introverata koristeći stupce "IE" i "WEIGHT" koristeći t-test.
 
-Prije provedbe t-testa moramo profesti F-test da provjerimo jednakost varijanci budući da su nepoznate.
+Prije provedbe t-testa moramo provesti F-test da provjerimo jednakost varijanci budući da su nepoznate.
 \
 \
 Pogledajmo prije varijance težina introverata:
@@ -743,7 +862,77 @@ uk <- sum(vrijednosti)/length(vrijednosti)
 print(paste("Točnost", uk))
 ```
 Točnost danog modela iznosi 70.1%, što je znatno bolje od slučajnog odabira te smatramo to dovoljno dobrom predikcijom.
+\
+\
+\
+\
+Sada ćemo pomoću logističke regresije pokušati predvidjeti skupinu MBTI tipa na temelju ostalih varijabli.
 
+Prisjetimo se, skupine MBTI tipova su "Analysts", "Diplomats", "Explorers" i "Sentinels".
+
+Model logističke regresije na temelju danih varijabli izbacuje vektor vrijednosti veličine c što je u našem slučaju 4 pošto imamo 4 različita MBTI tipa. 
+
+Svaka od tih vrijednosti je pomoću funkcije `softmax` preslikana na interval [0, 1] gdje suma svih vjerojatnosti za pojedine klase iznosi 1. 
+
+Taj vektor se zatim provodi "ubacuje" u funkciju `argmax` koja vektor enkodira tzv. "one-hot" encodingom, koji ima vrijednost 1 na indeksu najveće vrijednosti, a 0 na ostalim indeksima. 
+
+Taj vektor se konačno uspoređuje s vektorom stvarnih vrijednosti i računa se točnost modela.
+
+U našim modelima ćemo dodati jedan skriveni sloju, a parametar `linear.output` postaviti na `TRUE` kako bi se klasična sigmoidalna funkcija u skrivenom sloju zamijenila linearnom ReLU funkcijom koja u praksi pokazuje bolje rezultate.
+\
+\
+\
+\
+Definirajmo sada funkciju koja će nam pomoći u evaluaciji modela.
+
+```{r}
+evaluate_model <- function(model, dataset) {
+  one_hot_encoding <- c("Analysts", "Diplomats", "Explorers", "Sentinels")
+  predictions <- predict(model, dataset, type = "response")
+  predicted_classes <- max.col(predictions)
+  
+  accuracy <- sum(one_hot_encoding[predicted_classes] == dataset$GROUP) / length(dataset$GROUP)
+  paste0("Točnost modela: ", 100*accuracy %>% round(4), "%")
+}
+```
+
+Provedimo konačno logističku regresiju na našem skupu podataka.
+
+Prvi model će kao regresore koristiti samo visinu, težinu, dob i spol ispitanika.
+```{r}
+set.seed(131213121)
+
+encoded_SEX <- ifelse(dataset$SEX == "M", 1, 0)
+dataset$encoded_SEX <- encoded_SEX
+
+model <- neuralnet(formula = GROUP ~ HEIGHT + WEIGHT + AGE + encoded_SEX, 
+                   data = dataset, 
+                   hidden = c(3),
+                   linear.output = T,
+                   stepmax = 1000,
+                   learningrate = 0.01
+                   )
+
+evaluate_model(model, dataset)
+```
+Točnost ovog modela iznosi 35.05%, što je bolje od slučajnog odabira, ali i dalje nedovoljno dobro.
+
+
+Drugi model će kao regresore koristiti PAIN_1, PAIN_2, PAIN_3 i PAIN_4, koji predstavljaju bol u vratu, bol u gornjem dijelu leđa, bol u srednjem dijelu leđa i bol u donjem dijelu leđa, respektivno.
+```{r}
+set.seed(1312131)
+
+model <- neuralnet(formula = GROUP ~ PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4, 
+                   data = dataset, 
+                   hidden = c(4, 2),
+                   linear.output = T,
+                   stepmax = 100000,
+                   learningrate = 0.01
+                   )
+
+evaluate_model(model, dataset)
+```
+Iznenađujuće, ovaj model ima točnost od 60.82%, što je znatno bolje od prethodnog modela.
 
 ## Je li udio ekstrovertnih ljudi isti kod ljudi iznad i ispod 45 godina
 
