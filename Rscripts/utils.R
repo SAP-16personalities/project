@@ -11,18 +11,8 @@ check_expected <- function(table) {
   
   for(i in rows_total) {
     for(j in cols_total) {
-      if(i*j/total < 5) return(FALSE)
+      if(i*j/total < 5) return("Table doesn't meet the expected values criteria")
     }
   }
-  TRUE
-}
-
-height_category <- function(height) {
-  ifelse(height <= 160, "Short", 
-         ifelse(height <= 175, "Medium height", "Tall"))
-}
-
-weight_category <- function(weight) {
-  ifelse(weight <= 60, "Light", 
-         ifelse(weight <= 90, "Medium weight", "Heavy"))
+  return("Table meets the expected values criteria")
 }
