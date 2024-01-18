@@ -11,8 +11,8 @@ check_expected <- function(table) {
   
   for(i in rows_total) {
     for(j in cols_total) {
-      if(i*j/total < 5) return("Table doesn't meet the expected values criteria")
+      if(i*j/total < 5) cat("Table doesn't meet the expected values criteria")
     }
   }
-  return("Table meets the expected values criteria")
+  cat("Table meets the expected values criteria")
 }
