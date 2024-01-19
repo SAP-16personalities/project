@@ -890,7 +890,7 @@ Taj vektor se zatim provodi "ubacuje" u funkciju `argmax` koja vektor enkodira t
 
 Taj vektor se konačno uspoređuje s vektorom stvarnih vrijednosti i računa se točnost modela.
 
-U našim modelima ćemo dodati jedan skriveni sloju, a parametar `linear.output` postaviti na `TRUE` kako bi se klasična sigmoidalna funkcija u skrivenom sloju zamijenila linearnom ReLU funkcijom koja u praksi pokazuje bolje rezultate.
+U našem prvom modelu ćemo dodati jedan skriveni sloj sa 3 neurona, a u drugom modelu 2 skrivena sloja sa 4 i 2 neurona. Parametar `linear.output` postaviti na `TRUE` kako bi se klasična sigmoidalna funkcija u skrivenom sloju zamijenila linearnom ReLU funkcijom koja u praksi pokazuje bolje rezultate.
 \
 \
 \
