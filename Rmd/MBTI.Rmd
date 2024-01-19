@@ -271,7 +271,7 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Provedbom hi kvadrat testa dobivamo iznimno maleni p-value, iz čega slijedi da odbacujemo nultu hipotezu uz razinu značajnosti od 0.2 i odbacujemo nultu hipotezu te zaključujemo da su ekstrovertnost i način držanja zavisne varijable
+Provedbom hi kvadrat testa dobivamo iznimno maleni p-value, iz čega slijedi da odbacujemo nultu hipotezu uz razinu značajnosti od 0.05 te zaključujemo da su ekstrovertnost i način držanja zavisne varijable
 
 Isti postupak ćemo ponoviti i za raspoznavanje/intuiciju.
 \
@@ -289,6 +289,8 @@ chisq <- chisq.test(contingency_table)
 chisq
 ```
 Hi kvadrat test nam u ovom slučaju daje p-value od 0.7, iz čega slijedi da ne možemo odbaciti nultu hipotezu te zaključujemo da raspoznavanje/intuicija i način držanja ne ovise jedno o drugome.
+
+***
 
 ## Veza između fizičke aktivnosti i razine ekstrovertiranosti
 
@@ -334,8 +336,6 @@ Na grafu vidimo raspodjelu ljudi koji imaju veći koeficijent ekstrovertnosti od
 \
 \
 \
-\
-\
 Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati stupce "IS_ACTIVE" (stupac koji mjeri razinu aktivnosti osobe) i "IE" (introvert/ekstrovert) podatkovnog okvira.
 ```{r}
 contingency_table <- table(dataset$IS_ACTIVE, dataset$IE)
@@ -360,7 +360,7 @@ H1: varijance nisu jednake
 f_test <- var.test(E ~ IS_ACTIVE, data = dataset)
 f_test
 ```
-Provedbom f-testa dobili smo p-value od 0.8948 na temelju kojeg uz razinu značajnosti 0.2 ne odbacujemo nultu hipotezu te zaključujemo da su varijance jednake.
+Provedbom f-testa dobili smo p-value od 0.8948 na temelju kojeg uz razinu značajnosti 0.05 ne odbacujemo nultu hipotezu te zaključujemo da su varijance jednake.
 
 Sada ćemo provesti t-test:
 ```{r}
@@ -368,14 +368,9 @@ t_test <- t.test(E ~ IS_ACTIVE, data = dataset, var.equal = TRUE)
 t_test
 ```
 Na temelju rezultata t-testa ne odbacujemo nultu hipotezu te zaključujemo da ne postoji statistički značajna razlika između srednjih vrijednosti koeficijenta ekstrovertnosti za fizički aktivne i neaktivne osobe, što je u skladu s rezultatima hi kvadrat testa koji nam kaže da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
-\
-\
-\
-\
-\
-\
-\
-\
+
+***
+
 \
 \
 \
@@ -441,7 +436,7 @@ H1: Varijabla nije normalno distribuirana
 ```{r}
 shapiro.test(dataset$HEIGHT)
 ```
-Shapiro-Wilkov test normalnosti nam daje p-vrijednost 0.1028 uz razinu značajnosti 0.2, što znači da odbacujemo nultu hipotezu i zaključujemo kako varijabla HEIGHT nije normalno distribuirana
+Shapiro-Wilkov test normalnosti nam daje p-vrijednost 0.1028 uz razinu značajnosti 0.05, što znači da ne možemo odbaciti nultu hipotezu i zaključujemo kako je varijabla HEIGHT normalno distribuirana.
 \
 \
 \
@@ -456,9 +451,8 @@ H1: Varijabla nije normalno distribuirana
 ```{r}
 shapiro.test(dataset$WEIGHT)
 ```
-Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81, što znači da uz razinu značajnosti 0.2 ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT uistinu normalno distribuirana.
+Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 iz ćega slijedi da uz razinu značajnosti 0.05 ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT uistinu normalno distribuirana.
 
-Iako varijabla HEIGHT nije normalna osim što njen histogram donekle nalikuje na normalnu distribuciju, pozivamo se na robusnost ANOVA testa i T-testa te ga ipak provodimo na podacima uz pretpostavku da su podaci nezavisni stoga ćemo nad rezultatima tih testova i donositi zaključke
 
 ### Usporedba srednjih visina za četiri grupe osobnosti
 
@@ -498,7 +492,7 @@ H1: barem dvije varijance nisu jednake.
 ```{r}
 bartlett.test(HEIGHT ~ GROUP, data = dataset)
 ```
-Vidimo da je p-vrijednost velika te zato ne odbacujemo nultu hipotezu te zaključujemo da su varijance među grupama jednake.
+Vidimo da je p-vrijednost velika stoga ne odbacujemo nultu hipotezu te zaključujemo da su varijance među grupama jednake.
 
 Sada smo sigurni da možemo provesti ANOVA-u.
 
@@ -511,7 +505,11 @@ ggplot(dataset, aes(x = HEIGHT, fill = GROUP)) +
   scale_fill_ordinal() +
   theme_bw()
 ```
-
+\
+\
+\
+\
+\
 ```{r}
 ggplot(dataset, aes(x = GROUP,y = HEIGHT)) + 
   geom_boxplot() + 
@@ -561,12 +559,12 @@ Sada provodimo Shapiro-Wilkov test normalnosti varijable HEIGHT za svaku grupu:
 ```{r}
 shapiro.test(weight_extroverts)
 ```
-Uz dobiveni p-value od 0.96 i razinu značajnosti od 0.2 ne odbacujemo nultu hipotezu te zaključujemo da je varijabla HEIGHT normalno distribuirana za grupu ekstroverata.
+Uz dobiveni p-value od 0.96 i razinu značajnosti od 0.05 ne odbacujemo nultu hipotezu te zaključujemo da je varijabla HEIGHT normalno distribuirana za grupu ekstroverata.
 
 ```{r}
 shapiro.test(weight_introverts)
 ```
-Dobiveni p-value za WEIGHT za introverte iznosi 0.1261 što je manje od 0.2, stoga odbacujemo nultu hipotezu te zaključujemo da varijabla HEIGHT nije normalno distribuirana za grupu introverata, no pozivamo se na robusnost t-testa na normalnost podataka.
+Dobiveni p-value za WEIGHT za introverte iznosi 0.1261 što je veće od 0.05, stoga ne odbacujemo nultu hipotezu te zaključujemo da je varijabla HEIGHT normalno distribuirana za grupu introverata, što znači da možemo provesti t-test.
 
 
 Na sljedećem grafu možemo vidjeti distribuciju introverata/ekstroverata obzirom na njihove težine.
@@ -622,7 +620,11 @@ t_test <- t.test(HEIGHT ~ IE, data = dataset, var.equal = TRUE)
 t_test
 ```
 Zbog velike p-vrijednosti ne odbacujemo nultu hipotezu te zaključujemo da su srednje vrijednosti visina za introverte i ekstroverte jednake.
+\
+\
 
+***
+\
 
 ## Tip ličnosti na temelju pojedinih karakteristika
 
@@ -740,10 +742,10 @@ slova <- ifelse(probs1>probs2, "J", "P")
 vrijednosti <- ifelse(slova == substr(dataset$MBTI, 4, 4), 1, 0)
 uk <- sum(vrijednosti)/length(vrijednosti)
 
-print(paste("Točnost", uk))
+paste0("Točnost: ", 100*uk %>% round(4), "%")
 ```
 
-Kod procjene pripada li osoba kategoriji J ili P, dobili smo točnost od 0.6289, što je zadovoljavajuće. Ovo je dobar rezultat s obzirom na to da je naš model bio jednostavan odnosno nije sadržavao puno regresora. Još jedan problem na koji smo naišli je bila činjenica da podaci nisu bili ujednačeni, to jest određenih osobnosti nije bilo željene količine. 
+Kod procjene pripada li osoba kategoriji J ili P, dobili smo točnost od 62.89%, što je zadovoljavajuće. Ovo je dobar rezultat s obzirom na to da je naš model bio jednostavan odnosno nije sadržavao puno regresora. Još jedan problem na koji smo naišli je bila činjenica da podaci nisu bili ujednačeni, to jest određenih osobnosti nije bilo željene količine. 
 
 Ponovimo testiranje za još jednu karaktristiku, npr. razmišljanje i osjećanje
 
@@ -859,9 +861,19 @@ slova <- ifelse(probs1>probs2, "F", "T")
 vrijednosti <- ifelse(slova == substr(dataset$MBTI, 3, 3), 1, 0)
 uk <- sum(vrijednosti)/length(vrijednosti)
 
-print(paste("Točnost", uk))
+paste0("Točnost: ", 100*uk %>% round(4), "%")
 ```
 Točnost danog modela iznosi 70.1%, što je znatno bolje od slučajnog odabira te smatramo to dovoljno dobrom predikcijom.
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 \
 \
 \
@@ -916,8 +928,10 @@ model <- neuralnet(formula = GROUP ~ HEIGHT + WEIGHT + AGE + encoded_SEX,
 evaluate_model(model, dataset)
 ```
 Točnost ovog modela iznosi 35.05%, što je bolje od slučajnog odabira, ali i dalje nedovoljno dobro.
-
-
+\
+\
+\
+\
 Drugi model će kao regresore koristiti PAIN_1, PAIN_2, PAIN_3 i PAIN_4, koji predstavljaju bol u vratu, bol u gornjem dijelu leđa, bol u srednjem dijelu leđa i bol u donjem dijelu leđa, respektivno.
 ```{r}
 set.seed(1312131)
@@ -934,6 +948,35 @@ evaluate_model(model, dataset)
 ```
 Iznenađujuće, ovaj model ima točnost od 60.82%, što je znatno bolje od prethodnog modela.
 
+***
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
 ## Je li udio ekstrovertnih ljudi isti kod ljudi iznad i ispod 45 godina
 
 Prije nego krenemo na testiranje, moramo provjeriti je li naša pretpostavka o normalnoj distribuciji podataka točna.
@@ -945,9 +988,7 @@ Iz grafa se čini da je pretpostavka o normalnoj distribuciji točna, no provjer
 ```{r}
 shapiro.test(dataset$AGE)
 ```
-Uz p-value od 0.068 uz razinu značajnosti od 0.2 odbacujemo nultu hipotezu i zaključujemo da varijabla AGE nije normalno distribuirana.
-
-Iako varijabla AGE nije normalno distribuirana, poznato nam je da su z-test i t-test robusni na normalnost podataka, pa ćemo ih koristiti za testiranje.
+Uz p-value od 0.068 uz razinu značajnosti od 0.05 ne možemo odbaciti nultu hipotezu stoga zaključujemo da varijabla AGE ima normalnu distribuciju.
 
 Također, poznavajući centralni granični teorem, znamo da će se uz dovoljno veliki uzorak, distribucija srednjih vrijednosti približiti normalnoj distribuciji, stoga ćemo koristiti z-test za testiranje.
 
@@ -975,10 +1016,12 @@ z_test_result <- prop.test(c(Eyoung, Eold),
 # Print the result
 print(z_test_result)
 ```
-Provedeni z-test nam daje p-value 0.5667 koji je znatno veći od razine značajnosti 0.2 iz čega zaključujemo kako na temelju ovih podataka nemamo razloga sumnjati u H0 stiga ju niti ne odbacujemo.
+Provedeni z-test nam daje p-value 0.5667 koji je znatno veći od razine značajnosti 0.05 iz čega zaključujemo kako na temelju ovih podataka nemamo razloga sumnjati u H0 stoga ju niti ne odbacujemo.
+
 ***
 
 # Zaključak
-(---prazan prostor za zaključak---)
+Pokazali smo kako postoji povezanost između razine ekstrovertnosti i načina držanja. Ljudi koji se drže uspravno su u prosjeku ekstrovertniji od ljudi koji se drže pogrbljeno. S druge strane, utvrdili smo kako ne postoji povezanost intuicije/raspoznavanja i načina držanja. Omjer ekstrovertnih i introvertnih ljudi s obzirom na njihovu razinu aktivnosti je približno jednak, što znači da aktivnost ne utječe na ekstrovertnost. Koristeči ANOVA-u zaključili smo kako su prosječne težine također jednake za svaku od 4 MBTI skupine su približno jednake, a koristeći T-test kako su pročne visine introverata i ekstroverata jednako, što znači da težina i visina ne utječu na MBTI skupinu. Pokazali smo i kako je postotak ekstroverata isti kod mlađih i starijih ljudi. Dali smo par primjera modela koje smo koristili za predikcije pojedinih karakteristika osobnosti na temelju drugih osobina koristeći linearnu regresiju. Na kraju smo napravili i dvije neuronske mreže koje su predviđale MBTI skupinu ispitanika na temelju njihovih fizičkih karakteristika. 
 
+***
 
