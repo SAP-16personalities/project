@@ -886,7 +886,7 @@ Model logističke regresije na temelju danih varijabli izbacuje vektor vrijednos
 
 Svaka od tih vrijednosti je pomoću funkcije `softmax` preslikana na interval [0, 1] gdje suma svih vjerojatnosti za pojedine klase iznosi 1. 
 
-Taj vektor se zatim provodi "ubacuje" u funkciju `argmax` koja vektor enkodira tzv. "one-hot" encodingom, koji ima vrijednost 1 na indeksu najveće vrijednosti, a 0 na ostalim indeksima. 
+Taj vektor se zatim "ubacuje" u funkciju `argmax` koja vektor enkodira tzv. "one-hot" encodingom, koji ima vrijednost 1 na indeksu najveće vrijednosti, a 0 na ostalim indeksima. 
 
 Taj vektor se konačno uspoređuje s vektorom stvarnih vrijednosti i računa se točnost modela.
 
@@ -1008,13 +1008,11 @@ subset_result <- subset(dataset, AGE > 45 & substr(MBTI, 1, 1) == "E")
 Eold <- nrow(subset_result)
 total_group2 <- sum(dataset$AGE > 45)
 
-# Perform the z-test for proportions
 z_test_result <- prop.test(c(Eyoung, Eold),
                            c(total_group1, total_group2),
                            alternative = "two.sided")
 
-# Print the result
-print(z_test_result)
+z_test_result
 ```
 Provedeni z-test nam daje p-value 0.5667 koji je znatno veći od razine značajnosti 0.05 iz čega zaključujemo kako na temelju ovih podataka nemamo razloga sumnjati u H0 stoga ju niti ne odbacujemo.
 
