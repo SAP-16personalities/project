@@ -36,7 +36,9 @@ source("../Rscripts/utils.R")
 
 # Motivacija i opis problema
 
-Istražujemo povezanost između osobnosti, dobivene kroz MBTI test, i fizičkih karakteristika poput držanja tijela, težine i visine. Kroz proučavanje pitanja kao što su "Kako tipovi ličnosti utječu na način držanja?" i "Postoje li razlike u tjelesnoj težini ili visini između različitih tipova ličnosti?" analizom ovih podataka, nastojimo bolje razumjeti veze između mentalnog i fizičkog aspekta individualnosti.
+
+MBTI je test ličnosti koji kategorizira pojedince prema četiri dimenzije (Ekstroverzija/Introverzija, Senzornost/Intuicija, Razmišljanje/Osjećanje, Prosudba/Spontanost), dodjeljujući im jedan od 16 osobnostnih tipova.
+Istražiti ćemo povezanost između osobnosti, dobivene kroz MBTI test i fizičkih karakteristika poput držanja tijela, težine i visine.
 
 ***
 
@@ -52,7 +54,6 @@ dataset <- read_csv("../data/MBTI.csv")
 Proučavamo podatkovni skup kako bi ga znali urediti na način da nam je lakše raditi s njim kasnije.
 ```{r}
 head(dataset)
-tail(dataset)
 glimpse(dataset)
 ```
 \
@@ -104,6 +105,7 @@ dataset$WEIGHT <- round(dataset$WEIGHT * 0.45359237, 1)
 
 
 Dodat ćemo neke nove stupce pomoću kojih ćemo grupirati podatke u manje grupe kako bismo ih mogli bolje analizirati.
+Dodajemo stupac "IS_ACTIVE" (na temelju stupca "ACTIVE" grupira osobe u one aktivne i neaktivne) te stupce "IE", "SN", "TF", "JP" podatke uzimamo iz rezultata MBTI testa iz stupca "MBTI").
 ```{r}
 dataset$GROUP <- as.factor(color(dataset$MBTI)) 
 dataset$IS_ACTIVE <- as.factor(
@@ -124,7 +126,6 @@ dataset$JP <- as.factor(substr(dataset$MBTI, 4, 4))
 Ovako naš podatkovni skup izgleda nakon uređivanja njegovih podataka.
 ```{r}
 head(dataset)
-tail(dataset)
 glimpse(dataset)
 ```
 ***
@@ -244,8 +245,7 @@ ggplot(dataset, aes(x = GROUP, fill = GROUP)) +
 \
 \
 \
-Vizualiziramo podatke iz stupca "POSTURE" u odnosu na podatke iz stupca "GROUP" kako bismo vidjeli ima li veze između tipa ličnosti i načina držanja.
-
+Vizualiziramo podatke iz stupca "POSTURE" u odnosu na podatke iz stupca "GROUP".
 ```{r}
 mosaicplot(table(dataset$POSTURE, dataset$GROUP), 
            main = "Mosaic Plot for POSTURE i GROUP",
@@ -256,7 +256,7 @@ Provest ćemo hi kvadrat test za dvije kategorijske varijable gdje ćemo prouča
 
 Prije nego krenemo s testom, moramo provjeriti imamo li uvjete za njegovu provedbu. Najmanja očekivana vrijednost svake ćelije mora biti veća ili jednaka 5, a to provjeravamo pomoću funkcije "check_expected".
 
-Hipoza testa je da su varijable nezavisne, a alternativna hipoteza je da su varijable zavisne.
+Nulta hipoza testa je da su varijable nezavisne, a alternativna hipoteza je da su varijable zavisne.
 \
 \
 H0: POSTURE i IE su nezavisne varijable
@@ -288,13 +288,13 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Hi kvadrat test nam u ovom slučaju daje p-value od 0.7, iz čega slijedi da ne možemo odbaciti nultu hipotezu te zaključujemo da raspoznavanje/intuicija i način držanja ne ovise jedno o drugome.
+Hi kvadrat test nam u ovom slučaju daje p-value od 0.7, iz čega slijedi da ne možemo odbaciti nultu hipotezu uz razinu značajnosti od 0.05 te zaključujemo da raspoznavanje/intuicija i način držanja ne ovise jedno o drugome.
 
 ***
 
 ## Veza između fizičke aktivnosti i razine ekstrovertiranosti
 
-Fizičku aktivnost nam predstavlja stupac "ACTIVITY_LEVEL":
+Fizičku aktivnost nam predstavlja stupac "IS_ACTIVE":
 ```{r}
 ggplot(dataset, aes(x = IS_ACTIVE, fill = IS_ACTIVE)) + 
   geom_bar(color = "black") + 
@@ -336,7 +336,10 @@ Na grafu vidimo raspodjelu ljudi koji imaju veći koeficijent ekstrovertnosti od
 \
 \
 \
-Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati stupce "IS_ACTIVE" (stupac koji mjeri razinu aktivnosti osobe) i "IE" (introvert/ekstrovert) podatkovnog okvira.
+
+### Nezavisnost razine aktivnosti i ekstrovertnosti
+
+Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati gore navedene stupce.
 ```{r}
 contingency_table <- table(dataset$IS_ACTIVE, dataset$IE)
 kable(contingency_table, caption = "Kontingencijska tablica za IS_ACTIVE i IE", align = "r")
@@ -346,9 +349,11 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
+Na temelju rezultata testa, na razini značajnosti 0.05, ne odbacujemo nultu hipotezu te zaključujemo da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
 
-Sad ćemo provesti t-test gdje ćemo usporediti srednje vrijednosti stupca "E" (koeficijent ekstrovertnosti) za fizički aktivne i neaktivne osobe, kako bi usporedili rezultate t-testa s dobivenim rezultatima hi kvadrat testa.
+### Razlika srednje vrijednosti ekstrovertnosti kod aktivnih i neaktivnih ljudi
+
+Sada ćemo provesti t-test gdje ćemo usporediti srednje vrijednosti stupca "E" (koeficijent ekstrovertnosti) za fizički aktivne i neaktivne osobe, kako bi usporedili rezultate t-testa s dobivenim rezultatima hi kvadrat testa.
 
 Prije provedbe t-testa provest ćemo f-test kako bismo provjerili jednakost varijanci budući da su one nepoznate.
 \
@@ -397,7 +402,7 @@ Na temelju rezultata t-testa ne odbacujemo nultu hipotezu te zaključujemo da ne
 
 ## Razlika u visini/težini obzirom na tip ličnosti
 
-U našem podatkovnom skupu imamo stupce "WEIGHT", "HEIGHT", "GROUP" (stupac u kojem je 16 tipova osobnosti raspoređeno u 4 grupe) te stupac "IE" (u kojem je sadržan podatak o tome je li osoba introvert ili ekstrovert) koje ćemo koristiti u analiziranju visine i težine obzirom na tip ličnosti.
+U našem podatkovnom skupu imamo stupce "WEIGHT" (težina), "HEIGHT" (visina), "GROUP" (stupac u kojem je 16 tipova osobnosti raspoređeno u 4 grupe) te stupac "IE" (u kojem je sadržan podatak o tome je li osoba introvert ili ekstrovert) koje ćemo koristiti u analiziranju visine i težine obzirom na tip ličnosti.
 
 Prvo ćemo provjeriti normalnost numeričkih varijabli "HEIGHT" i "WEIGHT koje ćemo koristiti tokom analize.
 
@@ -451,7 +456,7 @@ H1: Varijabla nije normalno distribuirana
 ```{r}
 shapiro.test(dataset$WEIGHT)
 ```
-Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 iz ćega slijedi da uz razinu značajnosti 0.05 ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT uistinu normalno distribuirana.
+Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 iz ćega slijedi da uz razinu značajnosti 0.05 ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT normalno distribuirana.
 
 
 ### Usporedba srednjih visina za četiri grupe osobnosti
@@ -542,7 +547,8 @@ Obzirom na p-vrijednost od 0.47 ne odbacujemo nultu hipotezu. To sugerira da nem
 
 ### Usporedba srednjih težina za ekstroverte i introverte
 
-Obzirom da u ovom koraku varijablu WEIGHT grupiramo u dvije grupe, težine ekstroverata i introverata, također moramo i provjeriti je li varijabla WEIGHT normalno distribuirana za svaku grupu.
+Obzirom da u ovom koraku varijablu WEIGHT grupiramo u dvije grupe, težine ekstroverata i introverata.
+Moramo provjeriti je li varijabla WEIGHT normalno distribuirana za svaku grupu.
 ```{r}
 weight_extroverts <- subset(dataset, IE == "E")$WEIGHT
 weight_introverts <- subset(dataset, IE == "I")$WEIGHT
@@ -628,7 +634,9 @@ Zbog velike p-vrijednosti ne odbacujemo nultu hipotezu te zaključujemo da su sr
 
 ## Tip ličnosti na temelju pojedinih karakteristika
 
-Sada ćemo pokušati predvidjeti tip ličnosti na temelju pojedinih karakteristika.
+### Predviđanje paramatera ličnosti na temelju ostalih karakteristika
+
+Sada ćemo pokušati predvidjeti karakteristike ličnosti na temelju pojedinih obilježja.
 
 Ne možemo izračunati točnu vezu s MBTI tipom osobnosti jer je to kategorijska varijabla, stoga ćemo pokušavati predvidjeti koeficijente za pojedino svojstvo (npr. ekstrovertnost, intuitivnost, itd.) koristeći linearnu regresiju i uspoređivanjem dobivenih koeficijenata za isto svojstvo, u našem primjeru za J (prosuđivanje) i P (opažanje). 
 
@@ -688,7 +696,8 @@ model <- lm(formula = dataset$J ~ dataset$HEIGHT +
               dataset$PAIN_1 + 
               dataset$PAIN_2 + 
               dataset$PAIN_3 + 
-              dataset$PAIN_4          )
+              dataset$PAIN_4          
+            )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova J trecim modelom", r_squared))
@@ -944,7 +953,10 @@ Vidimo kako smo koristeći druge koeficijente kao regresore dobili točnost skor
 \
 \
 \
-Sada ćemo pomoću logističke regresije pokušati predvidjeti skupinu MBTI tipa na temelju ostalih varijabli.
+
+### Predviđanje MBTI skupine na temelju pojedinih karakteristika
+
+Sada ćemo pomoću logističke regresije pokušati predvidjeti skupinu MBTI tipa na temelju ostalih karakteristika
 
 Prisjetimo se, skupine MBTI tipova su "Analysts", "Diplomats", "Explorers" i "Sentinels".
 
