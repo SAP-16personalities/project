@@ -1,4 +1,4 @@
-# project
+# MBTI dataset
 
 ## Legenda:
 <b>AGE</b> - Dob<br>
