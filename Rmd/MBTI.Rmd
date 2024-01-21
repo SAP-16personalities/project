@@ -37,7 +37,7 @@ source("../Rscripts/utils.R")
 # Motivacija i opis problema
 
 
-MBTI je test ličnosti koji kategorizira pojedince prema četiri dimenzije (Ekstroverzija/Introverzija, Senzornost/Intuicija, Razmišljanje/Osjećanje, Prosudba/Spontanost), dodjeljujući im jedan od 16 osobnostnih tipova.
+MBTI je test ličnosti koji kategorizira pojedince prema četiri dimenzije (Ekstroverzija/Introverzija, Senzornost/Intuicija, Razmišljanje/Osjećanje, Prosudba/Spontanost), dodjeljujući im jedan od 16 osobnosnih tipova.
 Istražiti ćemo povezanost između osobnosti, dobivene kroz MBTI test i fizičkih karakteristika poput držanja tijela, težine i visine.
 
 ***
@@ -66,6 +66,19 @@ glimpse(dataset)
 \
 \
 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 
 ## Uređivanje podataka podatkovnog skupa
 
@@ -82,7 +95,7 @@ dataset$POSTURE <- factor(dataset$POSTURE, levels = c("A", "B", "C", "D"),
                           labels = c("idealno", "kifoza/lordoza", "ravna leđa", "nagnuto"))
 ```
 
-Uklonit ćemo prva dva stupca podatkovnog skupa obzirom da su jedinstveni identifikatori te nam ne pomažu u analizi.
+Uklonit ćemo prva dva stupca podatkovnog skupa obzirom da su jedinstveni identifikatori stoga nam ne pomažu u analizi.
 ```{r}
 dataset$...1 <- NULL
 dataset$`S No` <- NULL
@@ -129,39 +142,6 @@ head(dataset)
 glimpse(dataset)
 ```
 ***
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
 
 # Analiza podatkovnog skupa
 
@@ -190,10 +170,7 @@ ggplot(dataset, aes(x = POSTURE, fill = POSTURE)) +
 \
 \
 \
-\
-\
-\
-\
+
 Također imamo stupac "MBTI" koji predstavlja tipove ličnosti i razlikujemo [16 vrsta tipova osobnosti](https://www.16personalities.com/personality-types).
 ```{r}
 ggplot(dataset, aes(x = MBTI, fill = MBTI)) + 
@@ -245,23 +222,32 @@ ggplot(dataset, aes(x = GROUP, fill = GROUP)) +
 \
 \
 \
-Vizualiziramo podatke iz stupca "POSTURE" u odnosu na podatke iz stupca "GROUP".
+
+Vizualizirajmo podatke iz stupca "POSTURE" u odnosu na podatke iz stupca "GROUP".
 ```{r}
 mosaicplot(table(dataset$POSTURE, dataset$GROUP), 
            main = "Mosaic Plot for POSTURE i GROUP",
            color = brewer.pal(4, "Dark2"))
 ```
 
-Provest ćemo hi kvadrat test za dvije kategorijske varijable gdje ćemo proučavati stupce "POSTURE" i "IE" (introvert/ekstrovert) podatkovnog okvira. 
+Provest ćemo \(\chi^2\) test za dvije kategorijske varijable gdje ćemo proučavati stupce "POSTURE" i "IE" (introvert/ekstrovert) podatkovnog okvira. 
 
-Prije nego krenemo s testom, moramo provjeriti imamo li uvjete za njegovu provedbu. Najmanja očekivana vrijednost svake ćelije mora biti veća ili jednaka 5, a to provjeravamo pomoću funkcije "check_expected".
+Prije nego krenemo s testom, moramo provjeriti imamo li uvjete za njegovu provedbu. Najmanja očekivana vrijednost svake ćelije mora biti veća ili jednaka 5, a to provjeravamo pomoću funkcije `check_expected`.
 
 Nulta hipoza testa je da su varijable nezavisne, a alternativna hipoteza je da su varijable zavisne.
 \
 \
-H0: POSTURE i IE su nezavisne varijable
+$H0:~~POSTURE~~i~~IE~~su~~nezavisne~~varijable$
   
-H1: POSTURE i IE su zavisne varijable
+$H1:~~POSTURE~~i~~IE~~su~~zavisne~~varijable$
+
+\
+\
+\
+\
+\
+\
+
 ```{r}
 contingency_table <- table(dataset$POSTURE, dataset$IE)
 kable(contingency_table, caption = "Kontingencijska tablica za POSTURE i IE", align = "r")
@@ -271,14 +257,14 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Provedbom hi kvadrat testa dobivamo iznimno maleni p-value, iz čega slijedi da odbacujemo nultu hipotezu uz razinu značajnosti od 0.05 te zaključujemo da su ekstrovertnost i način držanja zavisne varijable
+Provedbom \(\chi^2\) testa dobivamo iznimno maleni p-value, iz čega slijedi da odbacujemo nultu hipotezu uz razinu značajnosti od 0.05 te zaključujemo da su ekstrovertnost i način držanja zavisne varijable
 
 Isti postupak ćemo ponoviti i za raspoznavanje/intuiciju.
 \
 \
-H0: POSTURE i SN su nezavisne varijable
+$H0:~~POSTURE~~i~~SN~~su~~nezavisne~~varijable$
 
-H1: POSTURE i SN su zavisne varijable
+$H1:~~POSTURE~~i~~SN~~su~~zavisne~~varijable$
 ```{r}
 contingency_table <- table(dataset$POSTURE, dataset$SN)
 kable(contingency_table, caption = "Kontingencijska tablica za POSTURE i SN", align = "r")
@@ -288,7 +274,7 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Hi kvadrat test nam u ovom slučaju daje p-value od 0.7, iz čega slijedi da ne možemo odbaciti nultu hipotezu uz razinu značajnosti od 0.05 te zaključujemo da raspoznavanje/intuicija i način držanja ne ovise jedno o drugome.
+\(\chi^2\) test nam u ovom slučaju daje p-value od 0.7, iz čega slijedi da ne možemo odbaciti nultu hipotezu uz razinu značajnosti od 0.05 te zaključujemo da raspoznavanje/intuicija i način držanja ne ovise jedno o drugome.
 
 ***
 
@@ -304,11 +290,6 @@ ggplot(dataset, aes(x = IS_ACTIVE, fill = IS_ACTIVE)) +
   theme(legend.position = "none")
 ```
 Prema ovom grafu ljude dijelimo u fizički aktivne i neaktivne.
-\
-\
-\
-\
-\
 
 Za koeficijent ekstrovertnosti imamo stupac s nazivom "E":
 ```{r}
@@ -339,7 +320,7 @@ Na grafu vidimo raspodjelu ljudi koji imaju veći koeficijent ekstrovertnosti od
 
 ### Nezavisnost razine aktivnosti i ekstrovertnosti
 
-Provest ćemo hi kvadrat test za kategorijske podatke gdje ćemo proučavati gore navedene stupce.
+Provest ćemo \(\chi^2\) test za kategorijske podatke gdje ćemo proučavati gore navedene stupce.
 ```{r}
 contingency_table <- table(dataset$IS_ACTIVE, dataset$IE)
 kable(contingency_table, caption = "Kontingencijska tablica za IS_ACTIVE i IE", align = "r")
@@ -353,14 +334,14 @@ Na temelju rezultata testa, na razini značajnosti 0.05, ne odbacujemo nultu hip
 
 ### Razlika srednje vrijednosti ekstrovertnosti kod aktivnih i neaktivnih ljudi
 
-Sada ćemo provesti t-test gdje ćemo usporediti srednje vrijednosti stupca "E" (koeficijent ekstrovertnosti) za fizički aktivne i neaktivne osobe, kako bi usporedili rezultate t-testa s dobivenim rezultatima hi kvadrat testa.
+Sada ćemo provesti t-test gdje ćemo usporediti srednje vrijednosti stupca "E" (koeficijent ekstrovertnosti) za fizički aktivne i neaktivne osobe, kako bi usporedili rezultate t-testa s dobivenim rezultatima \(\chi^2\) testa.
 
 Prije provedbe t-testa provest ćemo f-test kako bismo provjerili jednakost varijanci budući da su one nepoznate.
 \
 \
-H0: varijance su jednake
+$H0:~~\sigma_{\text{active}} = \sigma_{\text{inactive}}$
   
-H1: varijance nisu jednake
+$H1:~~\sigma_{\text{active}} \neq \sigma_{\text{inactive}}$
 ```{r}
 f_test <- var.test(E ~ IS_ACTIVE, data = dataset)
 f_test
@@ -372,16 +353,10 @@ Sad ćemo provesti t-test:
 t_test <- t.test(E ~ IS_ACTIVE, data = dataset, var.equal = TRUE)
 t_test
 ```
-Na temelju rezultata t-testa ne odbacujemo nultu hipotezu te zaključujemo da ne postoji statistički značajna razlika između srednjih vrijednosti koeficijenata ekstrovertnosti za fizički aktivne i neaktivne osobe, što je u skladu s rezultatima hi kvadrat testa koji nam kaže da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
+Na temelju rezultata t-testa ne odbacujemo nultu hipotezu te zaključujemo da ne postoji statistički značajna razlika između srednjih vrijednosti koeficijenata ekstrovertnosti za fizički aktivne i neaktivne osobe, što je u skladu s rezultatima \(\chi^2\) testa koji nam kaže da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
 
 ***
 
-\
-\
-\
-\
-\
-\
 \
 \
 \
@@ -434,9 +409,9 @@ Pogledajmo sada konkretne p-vrijednosti Shapiro-Wilkovog testa normalnosti kako 
 Provjerimo prvo varijablu HEIGHT:
 \
 \
-H0: Varijabla je normalno distribuirana
+$H0:~~Varijabla~~je~~normalno~~distribuirana$
 
-H1: Varijabla nije normalno distribuirana
+$H1:~~Varijabla~~nije~~normalno~~distribuirana$
 
 ```{r}
 shapiro.test(dataset$HEIGHT)
@@ -449,31 +424,76 @@ Shapiro-Wilkov test normalnosti nam daje p-vrijednost 0.1028 uz razinu značajno
 Provedimo isti test za varijablu WEIGHT:
 \
 \
-H0: Varijabla je normalno distribuirana
+$H0:~~Varijabla~~je~~normalno~~distribuirana$
 
-H1: Varijabla nije normalno distribuirana
+$H1:~~Varijabla~~nije~~normalno~~distribuirana$
 
 ```{r}
 shapiro.test(dataset$WEIGHT)
 ```
 Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.81 iz ćega slijedi da uz razinu značajnosti 0.05 ne možemo odbaciti nultu hipotezu i zaključujemo da je varijabla WEIGHT normalno distribuirana.
 
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 
 ### Usporedba srednjih visina za četiri grupe osobnosti
 
 Za usporedbu srednjih visina za četiri grupe osobnosti primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine za četiri grupe osobnosti.
 
-Postavljamo hipoteze, neka je mi-i prosječna vrijednost visina i-te skupine. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
+```{r}
+ggplot(dataset, aes(x = GROUP,y = HEIGHT)) + 
+  geom_boxplot() + 
+  labs(x = "Personality groups", 
+       y = "Height", 
+       title = "Box-plots of height by personality group") +
+  theme_bw()
+```
+Iz ovog grafa možemo vidjeti distribucije pojedinih grupa osobnosti u obliku box-plota iz kojih dobijemo vizualnu reprezentaciju njihovih medijana i interkvartilnih rangova. 
+
+Možemo vidjeti kako su medijani grupa "Analysts" i "Explorers" na rubu granica interkvartilnog ranga grupe "Sentinels", stoga ovdje možemo očekivati neke probleme oko jednakosti sredina i standardnih devijacija ovih grupa.
+
+Postavljamo hipoteze, neka je $\mu_{\text{i}}$ prosječna vrijednost visina i-te skupine. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
 \
 \
-H0: mi1 = mi2 = mi3 = mi4
+$H0:~~\mu_{\text{analysts}} = \mu_{\text{diplomats}} = \mu_{\text{explorers}} = \mu_{\text{sentinels}}$
   
-H1: barem dva mi-i nisu jednaka.
+$H1:~~barem~~dva~~\mu_{\text{i}}~~nisu~~jednaka.$
 \
 \
 Za hipoteze postavljene na ovaj način, nije preporučljivo koristiti t-test više puta zbog povećanja rizika od greške tipa I. 
 
-Stoga smo odabrali ANOVA (Analiza varijance) kao odgovarajuću metodu.
+Stoga smo odabrali ANOVA-u (Analizu varijance) kao odgovarajuću metodu.
 
 ANOVA se primjenjuje uz pretpostavke normalnosti distribucije reziduala, jednakih varijanci između grupa i nezavisnosti podataka unutar grupa.
 
@@ -490,9 +510,9 @@ vars_height
 Provest ćemo Bartlettov test o jednakosti varijanci koji testira hipoteze:
 \
 \
-H0: varijance su jednake.
+$H0:~~\sigma_{\text{1}} = \sigma_{\text{2}} = \sigma_{\text{3}} = \sigma_{\text{4}}$.
 
-H1: barem dvije varijance nisu jednake.
+$H1:~~barem~~dvije~~\sigma_{\text{i}}~~nisu~~jednake.$
   
 ```{r}
 bartlett.test(HEIGHT ~ GROUP, data = dataset)
@@ -515,17 +535,6 @@ ggplot(dataset, aes(x = HEIGHT, fill = GROUP)) +
 \
 \
 \
-```{r}
-ggplot(dataset, aes(x = GROUP,y = HEIGHT)) + 
-  geom_boxplot() + 
-  labs(x = "Personality groups", 
-       y = "Height", 
-       title = "Box-plots of height by personality group") +
-  theme_bw()
-```
-Iz ovog grafa možemo vidjeti distribucije pojedinih grupa osobnosti u obliku box-plota iz kojih dobijemo vizualnu reprezentaciju njihovih medijana i interkvartilnih rangova. 
-
-Možemo vidjeti kako su medijani grupa "Analysts" i "Explorers" na rubu granica interkvartilnog ranga grupe "Sentinels", stoga ovdje možemo očekivati neke probleme oko jednakosti sredina i standardnih devijacija ovih grupa.
 
 Pogledajmo srednje vrijednosti visina za pojedine grupe osobnosti:
 ```{r}
@@ -536,6 +545,12 @@ means_height
 \
 \
 \
+\
+\
+\
+\
+\
+
 Sada provedimo test:
 
 ```{r}
@@ -547,8 +562,7 @@ Obzirom na p-vrijednost od 0.47 ne odbacujemo nultu hipotezu. To sugerira da nem
 
 ### Usporedba srednjih težina za ekstroverte i introverte
 
-Obzirom da u ovom koraku varijablu WEIGHT grupiramo u dvije grupe, težine ekstroverata i introverata.
-Moramo provjeriti je li varijabla WEIGHT normalno distribuirana za svaku grupu.
+Obzirom da u ovom koraku varijablu WEIGHT grupiramo u dvije grupe, težine ekstroverata i introverata, moramo provjeriti je li varijabla WEIGHT normalno distribuirana za svaku grupu.
 ```{r}
 weight_extroverts <- subset(dataset, IE == "E")$WEIGHT
 weight_introverts <- subset(dataset, IE == "I")$WEIGHT
@@ -584,7 +598,7 @@ ggplot(dataset, aes(x = WEIGHT, fill = IE)) +
 ```
 Sada ćemo usporediti srednje vrijednosti težina ekstroverata i introverata koristeći stupce "IE" i "WEIGHT" koristeći t-test.
 
-Prije provedbe t-testa moramo provesti F-test da provjerimo jednakost varijanci budući da su nepoznate.
+Prije provedbe t-testa moramo provesti f-test da provjerimo jednakost varijanci budući da su nepoznate.
 \
 \
 Pogledajmo prije varijance težina introverata:
@@ -595,9 +609,9 @@ vars_weight
 F-test ćemo provesti s hipotezama:
 \
 \
-H0: varijance su jednake
+$H0:~~\sigma_{\text{introvert}} = \sigma_{\text{extrovert}}$
   
-H1: varijance nisu jednake
+$H1:~~\sigma_{\text{introvert}} \neq \sigma_{\text{extrovert}}$
   
 ```{r}
 f_test <- var.test(HEIGHT ~ IE, data = dataset)
@@ -605,7 +619,7 @@ f_test
 ```
 F-test daje p-vrijednost 0.6418 te zaključujemo da su varijance jednake.
 
-Sada možemo provesti T-test uz jednake, ali nepoznate varijance.
+Sada možemo provesti t-test uz jednake, ali nepoznate varijance.
 
 Pogledajmo srednje vrijednosti težina ekstroverata i introverata.
 ```{r}
@@ -617,9 +631,9 @@ means_weight
 Test provodimo s hipotezama:
 \
 \
-H0: srednje vrijednosti težine jednake su za ekstroverte i introverte
+$H0:~~\mu_{\text{introvert}} = \mu_{\text{extrovert}}$
   
-H1: srednje vrijednosti težine nisu jednake za ekstroverte i introverte
+$H1:~~\mu_{\text{introvert}} \neq \mu_{\text{extrovert}}$
 
 ```{r}
 t_test <- t.test(HEIGHT ~ IE, data = dataset, var.equal = TRUE)
@@ -644,104 +658,65 @@ Osoba pripada kategoriji J ili P ovisno o tome koji je koeficijent (predviđan l
 
 Najprije je potrebno testirati više modela linearne regresije odabirom različitih regresora kako bi pronašli najbolji model.
 
-Za pojedine modele moramo izračunati R^2 vrijednost, koja nam govori koliko dobro model objašnjava varijabilnost podataka. Model s najvećom R^2 vrijednosti je najbolji model.
+Za pojedine modele moramo izračunati $R^2$ vrijednost, koja nam govori koliko dobro model objašnjava varijabilnost podataka. Model s najvećom $R^2$ vrijednosti je najbolji model.
 
 Nakon što odaberemo najbolji model, izračunat ćemo koeficijente za J i P, te na temelju njih odrediti tu kategoriju.
 
+Prvi model za J i P karakteristike:
 ```{r}
-print("Prvi model za J i P karakteristike")
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
-              dataset$SEX + 
-              dataset$AGE
-            )
+model <- lm(formula = J ~ HEIGHT + SEX + AGE, data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova J prvim modelom", r_squared))
+r_squared1 <- model_summary$r.squared
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
-              dataset$SEX + 
-              dataset$AGE
-            )
+model <- lm(formula = P ~ HEIGHT + SEX + AGE, data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova P prvim modelom", r_squared))
+r_squared2 <- model_summary$r.squared
 
-print("Drugi model za J i P karakteristike")
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
-    dataset$WEIGHT + 
-    dataset$SEX + 
-    dataset$AGE + 
-    dataset$ACTIVITY_LEVEL
-  )
-model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova J drugim modelom", r_squared))
-
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              dataset$AGE + 
-              dataset$ACTIVITY_LEVEL
-            )
-model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova P drugim modelom", r_squared))
-
-print("Treci model za J i P karakteristike")
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              dataset$AGE + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4          
-            )
-model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova J trecim modelom", r_squared))
-
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              dataset$AGE + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4           )
-model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova P trecim modelom", r_squared))
+cat("R^2 za predikciju slova J prvim modelom:", r_squared1 %>% round(4), 
+    "\nR^2 za predikciju slova P prvim modelom:", r_squared2 %>% round(4), "\n")
 ```
-Vidimo kako je najprikladniji ispao treći model jer ima najveće R kvadrat vrijednosti u iznosima od 0.2055 za predikciju karakteristike J i 0.1817 za predikciju karakteristike P. 
+Drugi model za J i P karakteristike:
+```{r}
+model <- lm(formula = J ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL, data = dataset)
+model_summary <- summary(model)
+r_squared1 <- model_summary$r.squared
+
+model <- lm(formula = P ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL, data = dataset)
+model_summary <- summary(model)
+r_squared2 <- model_summary$r.squared
+
+cat("R^2 za predikciju slova J drugim modelom:", r_squared1 %>% round(4),
+    "\nR^2 za predikciju slova P drugim modelom:", r_squared2 %>% round(4), "\n")
+```
+Treći model za J i P karakteristike:
+```{r}
+model <- lm(formula = J ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
+model_summary <- summary(model)
+r_squared1 <- model_summary$r.squared
+
+model <- lm(formula = P ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4, data = dataset)
+model_summary <- summary(model)
+r_squared2 <- model_summary$r.squared
+
+cat("R^2 za predikciju slova J trećim modelom:", r_squared1 %>% round(4), 
+    "\nR^2 za predikciju slova P trecim modelom:", r_squared2 %>% round(4), "\n")
+```
+Vidimo kako je najprikladniji ispao treći model jer ima najveće $R^2$ vrijednosti u iznosima od 0.2055 za predikciju karakteristike J i 0.1817 za predikciju karakteristike P. 
 
 Testirajmo sada točnost modela
 ```{r}
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              dataset$AGE + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4
-            )
+model <- lm(formula = J ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
 model_summary <- summary(model)
 probs1 <- predict(model, newdata = dataset, type = "response")
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              dataset$AGE + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4
-            )
+model <- lm(formula = P ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
 model_summary <- summary(model)
 probs2 <- predict(model, newdata = dataset, type = "response")
 
@@ -749,117 +724,74 @@ slova <- ifelse(probs1>probs2, "J", "P")
 vrijednosti <- ifelse(slova == substr(dataset$MBTI, 4, 4), 1, 0)
 uk <- sum(vrijednosti)/length(vrijednosti)
 
-paste0("Točnost: ", 100*uk %>% round(4), "%")
+cat(paste0("Točnost: ", 100*uk %>% round(4), "%"))
 ```
 
 Kod procjene pripada li osoba kategoriji J ili P, dobili smo točnost od 62.89%, što je zadovoljavajuće. Ovo je dobar rezultat s obzirom na to da je naš model bio jednostavan odnosno nije sadržavao puno regresora. Još jedan problem na koji smo naišli je bila činjenica da podaci nisu bili ujednačeni, to jest određenih osobnosti nije bilo željene količine. 
 
 Ponovimo testiranje za još jednu karaktristiku, npr. razmišljanje i osjećanje
 
+Prvi model za T i F karakteristike:
 ```{r}
-print("Prvi model za F i T karakteristike")
-model <- lm(formula = dataset$F ~ dataset$HEIGHT + 
-              dataset$SEX + 
-              dataset$AGE
-            )
+model <- lm(formula = F ~ HEIGHT + SEX + AGE, data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova F prvim modelom", r_squared))
+r_squared1 <- model_summary$r.squared
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT + 
-              dataset$SEX + 
-              dataset$AGE
-            )
+model <- lm(formula = T ~ HEIGHT + SEX + AGE, data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova T prvim modelom", r_squared))
+r_squared2 <- model_summary$r.squared
 
-print("Drugi model za F i T karakteristike")
-model <- lm(formula = dataset$F ~ dataset$HEIGHT +
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              log(dataset$AGE) + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 +
-              dataset$PAIN_4
-            )
+cat("R^2 za predikciju slova F prvim modelom:", r_squared1 %>% round(4), 
+    "\nR^2 za predikciju slova T prvim modelom:", r_squared2 %>% round(4), "\n")
+```
+Drugi model za T i F karakteristike:
+```{r}
+model <- lm(formula = F ~ HEIGHT + WEIGHT + SEX + log(AGE) + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4, 
+            data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova F drugim modelom", r_squared))
+r_squared1 <- model_summary$r.squared
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              log(dataset$AGE) + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4
-            )
+model <- lm(formula = T ~ HEIGHT + WEIGHT + SEX + log(AGE) + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova T drugim modelom", r_squared))
+r_squared2 <- model_summary$r.squared
 
-print("Treci model za F i T karakteristike")
-model <- lm(formula = dataset$F ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              dataset$AGE + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4
-            )
+cat("R^2 za predikciju slova F drugim modelom:", r_squared1 %>% round(4), 
+    "\nR^2 za predikciju slova T drugim modelom:", r_squared2 %>% round(4), "\n")
+```
+Treći model za T i F karakteristike:
+```{r}
+model <- lm(formula = F ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova F trecim modelom", r_squared))
+r_squared1 <- model_summary$r.squared
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX +
-              dataset$AGE +
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 +
-              dataset$PAIN_2 + 
-              dataset$PAIN_3 +
-              dataset$PAIN_4
-            )
+model <- lm(formula = T ~ HEIGHT + WEIGHT + SEX + AGE + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova T trecim modelom", r_squared))
+r_squared2 <- model_summary$r.squared
 
+cat("R^2 za predikciju slova F trecim modelom:", r_squared1 %>% round(4), 
+    "\nR^2 za predikciju slova T trecim modelom:", r_squared2 %>% round(4), "\n")
 ```
 Drugi i treći modeli su znatno bolji od prvog, što je i očekivano s obzirom na to da su sadržavali više regresora, no treći model se ipak pokazao malo bolji od drugog.
 
 
 Testirajmo sada točnost modela
 ```{r}
-model <- lm(formula = dataset$F ~ dataset$HEIGHT + 
-              dataset$WEIGHT + 
-              dataset$SEX + 
-              log(dataset$AGE) + 
-              dataset$ACTIVITY_LEVEL + 
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 +
-              dataset$PAIN_3 + 
-              dataset$PAIN_4
-            )
+model <- lm(formula = F ~ HEIGHT + WEIGHT + SEX + log(AGE) + ACTIVITY_LEVEL + 
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
 model_summary <- summary(model)
 probs1 <- predict(model, newdata = dataset, type = "response")
 
-model <- lm(formula = dataset$T ~ dataset$HEIGHT +
-              dataset$WEIGHT +
-              dataset$SEX +
-              log(dataset$AGE) +
-              dataset$ACTIVITY_LEVEL +
-              dataset$PAIN_1 + 
-              dataset$PAIN_2 +
-              dataset$PAIN_3 +
-              dataset$PAIN_4)
+model <- lm(formula = T ~ HEIGHT + WEIGHT + SEX + log(AGE) + ACTIVITY_LEVEL +
+                          PAIN_1 + PAIN_2 + PAIN_3 + PAIN_4,
+            data = dataset)
 
 model_summary <- summary(model)
 probs2 <- predict(model, newdata = dataset, type = "response")
@@ -868,66 +800,39 @@ slova <- ifelse(probs1>probs2, "F", "T")
 vrijednosti <- ifelse(slova == substr(dataset$MBTI, 3, 3), 1, 0)
 uk <- sum(vrijednosti)/length(vrijednosti)
 
-paste0("Točnost: ", 100*uk %>% round(4), "%")
+cat(paste0("Točnost: ", 100*uk %>% round(4), "%"))
 ```
 Točnost danog modela iznosi 70.1%, što je znatno bolje od slučajnog odabira te smatramo to dovoljno dobrom predikcijom.
 \
 \
 Probajmo sad koristiti i koeficijente drugih karakteristika kao regesore u modelu
 
+Četvrti model za T i F karakteristike:
 ```{r}
-print("Četvrti model za J i P karakteristike")
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
-              dataset$SEX + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4+
-              dataset$S+
-              dataset$F+
-              dataset$T+
-              dataset$E+
-              dataset$I)
+model <- lm(formula = J ~ HEIGHT + SEX + PAIN_3 + PAIN_4 + S + F + T + E + I,
+            data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova J četvrtim modelom", r_squared))
+r_squared1 <- model_summary$r.squared
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
-              dataset$SEX+ 
-              dataset$PAIN_3+ 
-              dataset$PAIN_4+
-              dataset$S+
-              dataset$F+
-              dataset$T+
-              dataset$E+
-              dataset$I)
+model <- lm(formula = P ~ HEIGHT + SEX + PAIN_3 + PAIN_4 + S + F + T + E + I,
+            data = dataset)
 model_summary <- summary(model)
-r_squared <- model_summary$r.squared
-print(paste("R kvadrat za predikciju slova P četvrtim modelom", r_squared))
+r_squared2 <- model_summary$r.squared
+
+cat("R^2 za predikciju slova J četvrtim modelom:", r_squared1 %>% round(4), 
+    "\nR^2 za predikciju slova P četvrtim modelom:", r_squared2 %>% round(4), "\n")
 ```
-Vidimo kako smo dobili veći r2 izbacivši neke neznačajne regresore, a ubacivši koeficijente za neke druge karakteristike. To nam govori da unatoč tome što bi karakteristike trebale biti neovisne jedna od druge, na temelju nekih je moguće bolje predvidjeti drugu.
+Vidimo kako smo dobili veći $R^2$ izbacivši neke neznačajne regresore, a ubacivši koeficijente za neke druge karakteristike. To nam govori da unatoč tome što bi karakteristike trebale biti neovisne jedna od druge, na temelju nekih je moguće bolje predvidjeti drugu.
 \
-Testiramo model
+Testirajmo model
 ```{r}
-model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
-              dataset$SEX + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4+
-              dataset$S+
-              dataset$F+
-              dataset$T+
-              dataset$E+
-              dataset$I)
+model <- lm(formula = J ~ HEIGHT + SEX + PAIN_3 + PAIN_4 + S + F + T + E + I,
+            data = dataset)
 model_summary <- summary(model)
 probs1 <- predict(model, newdata = dataset, type = "response")
 
-model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
-              dataset$SEX + 
-              dataset$PAIN_3 + 
-              dataset$PAIN_4+
-              dataset$S+
-              dataset$F+
-              dataset$T+
-              dataset$E+
-              dataset$I)
+model <- lm(formula = P ~ HEIGHT + SEX + PAIN_3 + PAIN_4 + S + F + T + E + I,
+            data = dataset)
 
 model_summary <- summary(model)
 probs2 <- predict(model, newdata = dataset, type = "response")
@@ -936,9 +841,11 @@ slova <- ifelse(probs1>probs2, "J", "P")
 vrijednosti <- ifelse(slova == substr(dataset$MBTI, 4, 4), 1, 0)
 uk <- sum(vrijednosti)/length(vrijednosti)
 
-paste0("Točnost: ", 100*uk %>% round(4), "%")
+cat(paste0("Točnost: ", 100*uk %>% round(4), "%"))
 ```
 Vidimo kako smo koristeći druge koeficijente kao regresore dobili točnost skoro dobru kao i kod prijašnjeg modela
+\
+\
 \
 \
 \
@@ -977,12 +884,13 @@ Definirajmo sada funkciju koja će nam pomoći u evaluaciji modela.
 
 ```{r}
 evaluate_model <- function(model, dataset) {
+  GROUP <- dataset$GROUP
   one_hot_encoding <- c("Analysts", "Diplomats", "Explorers", "Sentinels")
   predictions <- predict(model, dataset, type = "response")
   predicted_classes <- max.col(predictions)
   
-  accuracy <- sum(one_hot_encoding[predicted_classes] == dataset$GROUP) / length(dataset$GROUP)
-  paste0("Točnost modela: ", 100*accuracy %>% round(4), "%")
+  accuracy <- sum(one_hot_encoding[predicted_classes] == GROUP) / length(GROUP)
+  cat("Točnost modela: ", 100*accuracy %>% round(4), "%")
 }
 ```
 
@@ -1070,12 +978,12 @@ Uz p-value od 0.068 uz razinu značajnosti od 0.05 ne možemo odbaciti nultu hip
 
 Također, poznavajući centralni granični teorem, znamo da će se uz dovoljno veliki uzorak, distribucija srednjih vrijednosti približiti normalnoj distribuciji, stoga ćemo koristiti z-test za testiranje.
 
-Kako bismo testirali je li postotak ekstroverata isti kod mladjih i starijih ljudi, koristit ćemo Z-test o dvije proporcije, uz alfa=0.05, a hipoteze postavljamo ovako
+Kako bismo testirali je li postotak ekstroverata isti kod mladjih i starijih ljudi, koristit ćemo Z-test o dvije proporcije, uz $\alpha$ = 0.05, a hipoteze postavljamo ovako
 \
 \
-H0 : postotak ekstroverata je isti neovisno o godinama (p1 - p2 = 0)
+$H0:~~postotak~~ekstroverata~~je~~isti~~neovisno~~o~~godinama~~(p_1 - p_2 = 0)$
 
-H1 : postotak ekstroverata se razlikuje ovisno o godinama (p1 - p2 != 0)
+$H1:~~postotak~~ekstroverata~~se~~razlikuje~~ovisno~~o~~godinama~~(p_1 - p_2 \neq 0)$
 
 ```{r}
 subset_result <- subset(dataset, AGE < 46 & substr(MBTI, 1, 1) == "E")
@@ -1097,7 +1005,6 @@ Provedeni z-test nam daje p-value 0.5667 koji je znatno veći od razine značajn
 ***
 
 # Zaključak
-Pokazali smo kako postoji povezanost između razine ekstrovertnosti i načina držanja. Ljudi koji se drže uspravno su u prosjeku ekstrovertniji od ljudi koji se drže pogrbljeno. S druge strane, utvrdili smo kako ne postoji povezanost intuicije/raspoznavanja i načina držanja. Omjer ekstrovertnih i introvertnih ljudi s obzirom na njihovu razinu aktivnosti je približno jednak, što znači da aktivnost ne utječe na ekstrovertnost. Koristeći ANOVA-u zaključili smo kako su prosječne težine također jednake za svaku od 4 MBTI skupine, a koristeći T-test kako su prosječne visine introverata i ekstroverata jednake, odnosno da nema značajne veze između težine i MBTI skupine ni visine i toga je li osoba ekstrovert. Pokazali smo i kako je postotak ekstroverata isti kod mlađih i starijih ljudi. Dali smo par primjera modela koje smo koristili za predikcije pojedinih karakteristika osobnosti na temelju drugih osobina koristeći linearnu regresiju. Na kraju smo napravili i dvije neuronske mreže koje su predviđale MBTI skupinu ispitanika na temelju njihovih fizičkih karakteristika. 
+Pokazali smo kako postoji povezanost između razine ekstrovertnosti i načina držanja. Ljudi koji se drže uspravno u prosjeku su ekstrovertniji od ljudi koji se drže pogrbljeno. S druge strane, utvrdili smo kako ne postoji povezanost intuicije/raspoznavanja i načina držanja. Omjer ekstrovertnih i introvertnih ljudi s obzirom na njihovu razinu aktivnosti je približno jednak, što znači da aktivnost ne utječe na ekstrovertnost. Koristeći ANOVA-u zaključili smo kako su prosječne težine također jednake za svaku od 4 MBTI skupine, a koristeći t-test kako su prosječne visine introverata i ekstroverata jednake, odnosno da nema značajne veze između težine i MBTI skupine ni visine i toga je li osoba ekstrovert. Pokazali smo i kako je postotak ekstroverata isti kod mlađih i starijih ljudi. Dali smo par primjera modela koje smo koristili za predikcije pojedinih karakteristika osobnosti na temelju drugih osobina koristeći linearnu regresiju. Na kraju smo napravili i dvije neuronske mreže koje su predviđale MBTI skupinu ispitanika na temelju njihovih fizičkih karakteristika. 
 
 ***
-
