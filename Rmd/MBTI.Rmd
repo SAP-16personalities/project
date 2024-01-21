@@ -96,7 +96,7 @@ colnames(dataset)[8] <- "PAIN_3"
 colnames(dataset)[9] <- "PAIN_4"
 ```
 
-Pretvorit ćemo podatke u stupcima "HEIGHT" i "WEIGHT" u centimentri i kilograme.
+Pretvorit ćemo podatke u stupcima "HEIGHT" i "WEIGHT" u centimentre i kilograme.
 ```{r}
 dataset$HEIGHT <- round(dataset$HEIGHT * 2.54, 1)
 dataset$WEIGHT <- round(dataset$WEIGHT * 0.45359237, 1)
@@ -166,7 +166,7 @@ glimpse(dataset)
 
 ## Veza između tipa ličnosti i načina držanja
 
-U našem podatkovnom skupu imamo stupce "POSTURE" koji predstavlja kategorije načina držanja i poprima vrijednosti "idealno", "kifoza/lordoza", "ravna leđa" i "nagnuto".
+U našem podatkovnom skupu imamo stupac "POSTURE" koji predstavlja kategorije načina držanja i poprima vrijednosti "idealno", "kifoza/lordoza", "ravna leđa" i "nagnuto".
 
 ```{r}
 ggplot(dataset, aes(x = POSTURE, fill = POSTURE)) +
@@ -218,7 +218,7 @@ ggplot(dataset, aes(x = MBTI, fill = MBTI)) +
 \
 \
 \
-Tih 16 tipova osobnosti radi lakšeg prikaza i analize grupiramo u 4 podskupine u skladu sa [Myers-Briggsovim modelom](https://www.16personalities.com/articles/our-theory) (analiziramo samo prvo slovo tipa osobnosti):
+Tih 16 tipova osobnosti radi lakšeg prikaza i analize grupiramo u 4 podskupine u skladu s [Myers-Briggsovim modelom](https://www.16personalities.com/articles/our-theory) (analiziramo samo prvo slovo tipa osobnosti):
 ```{r}
 ggplot(dataset, aes(x = GROUP, fill = GROUP)) + 
   geom_bar(color = "black") + 
@@ -303,14 +303,14 @@ ggplot(dataset, aes(x = IS_ACTIVE, fill = IS_ACTIVE)) +
   theme_classic() +
   theme(legend.position = "none")
 ```
-Prema ovom grafu ljude dijelimo u fizički aktivne i one neaktivne.
+Prema ovom grafu ljude dijelimo u fizički aktivne i neaktivne.
 \
 \
 \
 \
 \
 
-Za koeficijent ekstrovertnosti imamo stupac sa nazivom "E":
+Za koeficijent ekstrovertnosti imamo stupac s nazivom "E":
 ```{r}
 ggplot(dataset, aes(x = E, fill = E > I)) +
   geom_bar(color = "black") + 
@@ -346,11 +346,11 @@ check_expected(contingency_table)
 chisq <- chisq.test(contingency_table)
 chisq
 ```
-Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke aktivnosti i ekstroverstnosti.
+Na temelju rezultata testa zaključujemo da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
 
-Sada ćemo provesti t-test gdje ćemo usporediti srednje vrijednosti stupca "E" (koeficijent ekstrovertnosti) za fizički aktivne i neaktivne osobe, kako bi usporedili rezultate t-testa s dobivenim rezultatima hi kvadrat testa.
+Sad ćemo provesti t-test gdje ćemo usporediti srednje vrijednosti stupca "E" (koeficijent ekstrovertnosti) za fizički aktivne i neaktivne osobe, kako bi usporedili rezultate t-testa s dobivenim rezultatima hi kvadrat testa.
 
-Prije provedbe t-testa provest ćemo f-test kako bi provjerili jednakost varijanci pošto su one nepoznate.
+Prije provedbe t-testa provest ćemo f-test kako bismo provjerili jednakost varijanci budući da su one nepoznate.
 \
 \
 H0: varijance su jednake
@@ -362,12 +362,12 @@ f_test
 ```
 Provedbom f-testa dobili smo p-value od 0.8948 na temelju kojeg uz razinu značajnosti 0.05 ne odbacujemo nultu hipotezu te zaključujemo da su varijance jednake.
 
-Sada ćemo provesti t-test:
+Sad ćemo provesti t-test:
 ```{r}
 t_test <- t.test(E ~ IS_ACTIVE, data = dataset, var.equal = TRUE)
 t_test
 ```
-Na temelju rezultata t-testa ne odbacujemo nultu hipotezu te zaključujemo da ne postoji statistički značajna razlika između srednjih vrijednosti koeficijenta ekstrovertnosti za fizički aktivne i neaktivne osobe, što je u skladu s rezultatima hi kvadrat testa koji nam kaže da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
+Na temelju rezultata t-testa ne odbacujemo nultu hipotezu te zaključujemo da ne postoji statistički značajna razlika između srednjih vrijednosti koeficijenata ekstrovertnosti za fizički aktivne i neaktivne osobe, što je u skladu s rezultatima hi kvadrat testa koji nam kaže da ne postoji veza između fizičke aktivnosti i ekstrovertnosti.
 
 ***
 
@@ -458,7 +458,7 @@ Za varijablu WEIGHT Shapiro-Wilkov test normalnosti nam daje p-vrijednost od 0.8
 
 Za usporedbu srednjih visina za četiri grupe osobnosti primijenit ćemo analizu varijance (ANOVA) na naš podatkovni skup kako bismo usporedili srednje vrijednosti visine za četiri grupe osobnosti.
 
-Postavljamo hipoteze, neka je mi-i prosječna vrijednost visina. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
+Postavljamo hipoteze, neka je mi-i prosječna vrijednost visina i-te skupine. Osobnosti su grupirane u četiri skupine: "Analysts", "Diplomats", "Explorers" i "Sentinels".
 \
 \
 H0: mi1 = mi2 = mi3 = mi4
@@ -567,7 +567,7 @@ shapiro.test(weight_introverts)
 Dobiveni p-value za WEIGHT za introverte iznosi 0.1261 što je veće od 0.05, stoga ne odbacujemo nultu hipotezu te zaključujemo da je varijabla HEIGHT normalno distribuirana za grupu introverata, što znači da možemo provesti t-test.
 
 
-Na sljedećem grafu možemo vidjeti distribuciju introverata/ekstroverata obzirom na njihove težine.
+Na sljedećem grafu možemo vidjeti distribuciju introverata/ekstroverata s obzirom na njihove težine.
 ```{r}
 ggplot(dataset, aes(x = WEIGHT, fill = IE)) + 
   geom_histogram(color = "black", bins = 30, alpha = 0.75) + 
@@ -586,7 +586,7 @@ Pogledajmo prije varijance težina introverata:
 vars_weight <- aggregate(WEIGHT ~ IE, data = dataset, var)
 vars_weight
 ```
-F-test ćemo provesti sa hipotezama:
+F-test ćemo provesti s hipotezama:
 \
 \
 H0: varijance su jednake
@@ -608,7 +608,7 @@ means_weight
 ```
 
 
-Test provodimo sa hipotezama:
+Test provodimo s hipotezama:
 \
 \
 H0: srednje vrijednosti težine jednake su za ekstroverte i introverte
@@ -630,11 +630,11 @@ Zbog velike p-vrijednosti ne odbacujemo nultu hipotezu te zaključujemo da su sr
 
 Sada ćemo pokušati predvidjeti tip ličnosti na temelju pojedinih karakteristika.
 
-Ne možemo izračunati točnu vezu s MBTI tipom osobnosti jer je to diskretna varijabla, stoga ćemo pokušavati predvidjeti koeficijente za pojedino svojstvo (npr. ekstrovertnost, intuitivnost, itd.) koristeći linearnu regresiju i uspoređivanjem dobivenih koeficijenata za isto svojstvo, u našem primjeru za J (prosuđivanje) i P (opažanje). 
+Ne možemo izračunati točnu vezu s MBTI tipom osobnosti jer je to kategorijska varijabla, stoga ćemo pokušavati predvidjeti koeficijente za pojedino svojstvo (npr. ekstrovertnost, intuitivnost, itd.) koristeći linearnu regresiju i uspoređivanjem dobivenih koeficijenata za isto svojstvo, u našem primjeru za J (prosuđivanje) i P (opažanje). 
 
 Osoba pripada kategoriji J ili P ovisno o tome koji je koeficijent (predviđan linearnom regresijom) veći. 
 
-Najprije je potrebno testirati više modela linearne regresije odabirom različitih regresora kako bi prinašli najbolji model.
+Najprije je potrebno testirati više modela linearne regresije odabirom različitih regresora kako bi pronašli najbolji model.
 
 Za pojedine modele moramo izračunati R^2 vrijednost, koja nam govori koliko dobro model objašnjava varijabilnost podataka. Model s najvećom R^2 vrijednosti je najbolji model.
 
@@ -688,8 +688,7 @@ model <- lm(formula = dataset$J ~ dataset$HEIGHT +
               dataset$PAIN_1 + 
               dataset$PAIN_2 + 
               dataset$PAIN_3 + 
-              dataset$PAIN_4
-            )
+              dataset$PAIN_4          )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova J trecim modelom", r_squared))
@@ -702,8 +701,7 @@ model <- lm(formula = dataset$P ~ dataset$HEIGHT +
               dataset$PAIN_1 + 
               dataset$PAIN_2 + 
               dataset$PAIN_3 + 
-              dataset$PAIN_4
-            )
+              dataset$PAIN_4           )
 model_summary <- summary(model)
 r_squared <- model_summary$r.squared
 print(paste("R kvadrat za predikciju slova P trecim modelom", r_squared))
@@ -866,6 +864,74 @@ paste0("Točnost: ", 100*uk %>% round(4), "%")
 Točnost danog modela iznosi 70.1%, što je znatno bolje od slučajnog odabira te smatramo to dovoljno dobrom predikcijom.
 \
 \
+Probajmo sad koristiti i koeficijente drugih karakteristika kao regesore u modelu
+
+```{r}
+print("Četvrti model za J i P karakteristike")
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
+              dataset$SEX + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4+
+              dataset$S+
+              dataset$F+
+              dataset$T+
+              dataset$E+
+              dataset$I)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova J četvrtim modelom", r_squared))
+
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
+              dataset$SEX+ 
+              dataset$PAIN_3+ 
+              dataset$PAIN_4+
+              dataset$S+
+              dataset$F+
+              dataset$T+
+              dataset$E+
+              dataset$I)
+model_summary <- summary(model)
+r_squared <- model_summary$r.squared
+print(paste("R kvadrat za predikciju slova P četvrtim modelom", r_squared))
+```
+Vidimo kako smo dobili veći r2 izbacivši neke neznačajne regresore, a ubacivši koeficijente za neke druge karakteristike. To nam govori da unatoč tome što bi karakteristike trebale biti neovisne jedna od druge, na temelju nekih je moguće bolje predvidjeti drugu.
+\
+Testiramo model
+```{r}
+model <- lm(formula = dataset$J ~ dataset$HEIGHT + 
+              dataset$SEX + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4+
+              dataset$S+
+              dataset$F+
+              dataset$T+
+              dataset$E+
+              dataset$I)
+model_summary <- summary(model)
+probs1 <- predict(model, newdata = dataset, type = "response")
+
+model <- lm(formula = dataset$P ~ dataset$HEIGHT + 
+              dataset$SEX + 
+              dataset$PAIN_3 + 
+              dataset$PAIN_4+
+              dataset$S+
+              dataset$F+
+              dataset$T+
+              dataset$E+
+              dataset$I)
+
+model_summary <- summary(model)
+probs2 <- predict(model, newdata = dataset, type = "response")
+
+slova <- ifelse(probs1>probs2, "J", "P")
+vrijednosti <- ifelse(slova == substr(dataset$MBTI, 4, 4), 1, 0)
+uk <- sum(vrijednosti)/length(vrijednosti)
+
+paste0("Točnost: ", 100*uk %>% round(4), "%")
+```
+Vidimo kako smo koristeći druge koeficijente kao regresore dobili točnost skoro dobru kao i kod prijašnjeg modela
+\
+\
 \
 \
 \
@@ -882,7 +948,7 @@ Sada ćemo pomoću logističke regresije pokušati predvidjeti skupinu MBTI tipa
 
 Prisjetimo se, skupine MBTI tipova su "Analysts", "Diplomats", "Explorers" i "Sentinels".
 
-Model logističke regresije na temelju danih varijabli izbacuje vektor vrijednosti veličine c što je u našem slučaju 4 pošto imamo 4 različita MBTI tipa. 
+Model logističke regresije na temelju danih varijabli izbacuje vektor vrijednosti veličine c što je u našem slučaju 4, budući da imamo 4 različita MBTI tipa. 
 
 Svaka od tih vrijednosti je pomoću funkcije `softmax` preslikana na interval [0, 1] gdje suma svih vjerojatnosti za pojedine klase iznosi 1. 
 
@@ -890,7 +956,7 @@ Taj vektor se zatim "ubacuje" u funkciju `argmax` koja vektor enkodira tzv. "one
 
 Taj vektor se konačno uspoređuje s vektorom stvarnih vrijednosti i računa se točnost modela.
 
-U našem prvom modelu ćemo dodati jedan skriveni sloj sa 3 neurona, a u drugom modelu 2 skrivena sloja sa 4 i 2 neurona. Parametar `linear.output` postaviti na `TRUE` kako bi se klasična sigmoidalna funkcija u skrivenom sloju zamijenila linearnom ReLU funkcijom koja u praksi pokazuje bolje rezultate.
+U našem prvom modelu ćemo dodati jedan skriveni sloj s 3 neurona, a u drugom modelu 2 skrivena sloja sa 4 i 2 neurona. Parametar `linear.output` postaviti na `TRUE` kako bi se klasična sigmoidalna funkcija u skrivenom sloju zamijenila linearnom ReLU funkcijom koja u praksi pokazuje bolje rezultate.
 \
 \
 \
@@ -992,7 +1058,7 @@ Uz p-value od 0.068 uz razinu značajnosti od 0.05 ne možemo odbaciti nultu hip
 
 Također, poznavajući centralni granični teorem, znamo da će se uz dovoljno veliki uzorak, distribucija srednjih vrijednosti približiti normalnoj distribuciji, stoga ćemo koristiti z-test za testiranje.
 
-Kako bismo testirali je li postotak ekstroverata isti kod mladjih i starijih ljudi, koristit ćemo Z-test za dvije proporcije, uz alfa=0.05, a hipoteze postavljamo ovako
+Kako bismo testirali je li postotak ekstroverata isti kod mladjih i starijih ljudi, koristit ćemo Z-test o dvije proporcije, uz alfa=0.05, a hipoteze postavljamo ovako
 \
 \
 H0 : postotak ekstroverata je isti neovisno o godinama (p1 - p2 = 0)
@@ -1019,7 +1085,7 @@ Provedeni z-test nam daje p-value 0.5667 koji je znatno veći od razine značajn
 ***
 
 # Zaključak
-Pokazali smo kako postoji povezanost između razine ekstrovertnosti i načina držanja. Ljudi koji se drže uspravno su u prosjeku ekstrovertniji od ljudi koji se drže pogrbljeno. S druge strane, utvrdili smo kako ne postoji povezanost intuicije/raspoznavanja i načina držanja. Omjer ekstrovertnih i introvertnih ljudi s obzirom na njihovu razinu aktivnosti je približno jednak, što znači da aktivnost ne utječe na ekstrovertnost. Koristeči ANOVA-u zaključili smo kako su prosječne težine također jednake za svaku od 4 MBTI skupine su približno jednake, a koristeći T-test kako su pročne visine introverata i ekstroverata jednako, što znači da težina i visina ne utječu na MBTI skupinu. Pokazali smo i kako je postotak ekstroverata isti kod mlađih i starijih ljudi. Dali smo par primjera modela koje smo koristili za predikcije pojedinih karakteristika osobnosti na temelju drugih osobina koristeći linearnu regresiju. Na kraju smo napravili i dvije neuronske mreže koje su predviđale MBTI skupinu ispitanika na temelju njihovih fizičkih karakteristika. 
+Pokazali smo kako postoji povezanost između razine ekstrovertnosti i načina držanja. Ljudi koji se drže uspravno su u prosjeku ekstrovertniji od ljudi koji se drže pogrbljeno. S druge strane, utvrdili smo kako ne postoji povezanost intuicije/raspoznavanja i načina držanja. Omjer ekstrovertnih i introvertnih ljudi s obzirom na njihovu razinu aktivnosti je približno jednak, što znači da aktivnost ne utječe na ekstrovertnost. Koristeći ANOVA-u zaključili smo kako su prosječne težine također jednake za svaku od 4 MBTI skupine, a koristeći T-test kako su prosječne visine introverata i ekstroverata jednake, odnosno da nema značajne veze između težine i MBTI skupine ni visine i toga je li osoba ekstrovert. Pokazali smo i kako je postotak ekstroverata isti kod mlađih i starijih ljudi. Dali smo par primjera modela koje smo koristili za predikcije pojedinih karakteristika osobnosti na temelju drugih osobina koristeći linearnu regresiju. Na kraju smo napravili i dvije neuronske mreže koje su predviđale MBTI skupinu ispitanika na temelju njihovih fizičkih karakteristika. 
 
 ***
 
